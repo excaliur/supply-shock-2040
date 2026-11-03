@@ -1,0 +1,1933 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>Supply Shock 2040</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap">
+<style>
+/* ----------------------------------------------------------------------
+   DESIGN PLAN
+   Layout: "Briefing room" — a fixed left phase-rail (becomes a horizontal
+   pill scroller on phones) beside a document-like main pane; the teacher
+   view swaps the rail for a top tab strip over a card/table dashboard.
+   Color:  --bg --surface --ink --ink-dim --line --water --food --warn --good
+   Type:   --font-display (Fraunces, dossier headings) /
+           --font-body (IBM Plex Sans) / --font-mono (IBM Plex Mono, for
+           tokens, timestamps and every figure that should line up)
+   ---------------------------------------------------------------------- */
+:root{
+  --bg:#05070f; --surface:#0b1026; --surface-2:#10163a;
+  --ink:#eaf6ff; --ink-dim:#8294c2; --line:#1d2c52;
+  --water:#00e5ff; --water-ink:#9df3ff; --water-soft:#06202c;
+  --food:#ff9d2e; --food-ink:#ffd199; --food-soft:#2a1704;
+  --plum:#c061ff; --plum-ink:#e8c3ff; --plum-soft:#200b36;
+  --warn:#ff3b6b; --warn-soft:#2b0414;
+  --good:#39ff9d; --good-soft:#06241a;
+  --accent-text:#04101c;
+  --font-display:'Orbitron', 'Rajdhani', sans-serif;
+  --font-body:'Rajdhani', -apple-system, 'Segoe UI', sans-serif;
+  --font-mono:'Share Tech Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  --radius:10px;
+  --shadow:0 0 1px rgba(0,229,255,.5), 0 4px 22px rgba(0,229,255,.14);
+  color-scheme: dark;
+}
+/* The existing accessibility "contrast" cycle (system/dark/light) is repurposed:
+   the neon look is now the single visual language, so the "light" state becomes
+   a brighter, thicker-bordered High-Contrast Neon variant rather than a literal
+   light theme — keeping a genuine accessibility option without breaking the skin. */
+:root[data-theme="light"]{
+  --bg:#000000; --surface:#060a16; --surface-2:#0b1430;
+  --ink:#ffffff; --ink-dim:#c3d2f2; --line:#3f66ad;
+  --water:#3df2ff; --water-ink:#e3fcff; --water-soft:#07222f;
+  --food:#ffb24d; --food-ink:#ffe8c7; --food-soft:#301c04;
+  --plum:#d58bff; --plum-ink:#f6e3ff; --plum-soft:#271040;
+  --warn:#ff6688; --warn-soft:#350619;
+  --good:#5bffb0; --good-soft:#07301f;
+  --accent-text:#000000;
+  --shadow:0 0 0 1px rgba(255,255,255,.25), 0 0 26px rgba(61,242,255,.3);
+  color-scheme: dark;
+}
+@media (prefers-reduced-motion:no-preference){
+  .scanlines{position:fixed; inset:0; pointer-events:none; z-index:1;
+    background:repeating-linear-gradient(to bottom, rgba(255,255,255,0) 0 3px, rgba(0,229,255,.025) 3px 4px);
+  }
+}
+.bg-glow{position:fixed; inset:0; pointer-events:none; z-index:0;
+  background:
+    radial-gradient(circle at 12% 18%, rgba(192,97,255,.16), transparent 32%),
+    radial-gradient(circle at 88% 8%, rgba(0,229,255,.14), transparent 30%),
+    radial-gradient(circle at 70% 92%, rgba(255,157,46,.08), transparent 28%);
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  background:var(--bg); color:var(--ink); font-family:var(--font-body);
+  font-size:var(--fs,16px); line-height:1.5;
+  padding-left:max(16px, env(safe-area-inset-left,0px));
+  padding-right:max(16px, env(safe-area-inset-right,0px));
+}
+h1,h2,h3,h4{font-family:var(--font-display); text-wrap:balance; margin:0 0 .4em; font-weight:600; color:var(--ink)}
+h1{font-size:1.9rem; font-weight:700} h2{font-size:1.4rem} h3{font-size:1.12rem} h4{font-size:1rem}
+p{margin:0 0 .8em; max-width:65ch} small{font-size:.82em}
+a{color:var(--water)}
+label{font-weight:600; font-size:.88rem}
+.mono{font-family:var(--font-mono); font-variant-numeric:tabular-nums}
+.muted{color:var(--ink-dim)}
+button{font:inherit; cursor:pointer}
+input,textarea,select{font:inherit; color:var(--ink); background:var(--surface); border:1.5px solid var(--line); border-radius:7px; padding:.55em .7em; width:100%}
+input:focus-visible,textarea:focus-visible,select:focus-visible,button:focus-visible,a:focus-visible{outline:3px solid var(--water); outline-offset:2px}
+textarea{resize:vertical; min-height:5em; font-family:var(--font-body)}
+.visually-hidden{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap}
+.skip-link{position:absolute; left:8px; top:-48px; background:var(--ink); color:var(--bg); padding:.6em 1em; border-radius:8px; z-index:100; transition:top .15s}
+.skip-link:focus{top:8px}
+@media (prefers-reduced-motion:no-preference){ .fade-in{animation:fadeIn .25s ease-out} }
+@keyframes fadeIn{from{opacity:0; transform:translateY(4px)} to{opacity:1; transform:none}}
+
+/* ---- buttons ---- */
+.btn{display:inline-flex; align-items:center; gap:.5em; border-radius:8px; padding:.6em 1.1em; font-weight:600; font-size:.92rem; border:1.5px solid var(--line); background:var(--surface); color:var(--ink)}
+.btn:hover{border-color:var(--ink-dim)}
+.btn-primary{background:var(--ink); color:var(--bg); border-color:var(--ink)}
+.btn-primary:hover{opacity:.9}
+.btn-water{background:var(--water); color:var(--accent-text); border-color:var(--water)}
+.btn-food{background:var(--food); color:var(--accent-text); border-color:var(--food)}
+.btn-ghost{background:transparent; border-color:transparent; color:var(--ink-dim)}
+.btn-ghost:hover{color:var(--ink); background:var(--surface-2)}
+.btn-sm{padding:.4em .75em; font-size:.82rem}
+.btn:disabled{opacity:.45; cursor:not-allowed}
+.btn-row{display:flex; gap:.6em; flex-wrap:wrap; margin-top:1.4em}
+
+/* ---- top bar ---- */
+.topbar{display:flex; align-items:center; gap:1em; flex-wrap:wrap; padding-block:.8em; border-bottom:1.5px solid var(--line); margin-bottom:1.2em}
+.wordmark{font-family:var(--font-display); font-weight:700; font-size:1.08rem; display:flex; align-items:baseline; gap:.5em; white-space:nowrap}
+.wordmark .tag{font-family:var(--font-mono); font-weight:500; font-size:.68rem; color:var(--ink-dim); letter-spacing:.04em; text-transform:uppercase; border:1px solid var(--line); border-radius:5px; padding:.15em .45em}
+.topbar-spacer{flex:1}
+.a11y-controls{display:flex; align-items:center; gap:.35em; border-left:1.5px solid var(--line); padding-left:1em; margin-left:.2em}
+.fs-btn{width:2em; height:2em; border-radius:7px; border:1.5px solid var(--line); background:var(--surface); display:flex; align-items:center; justify-content:center; font-size:.85rem; font-weight:700}
+.role-switch{display:flex; gap:.3em; background:var(--surface-2); padding:.25em; border-radius:9px}
+.role-switch button{padding:.4em .85em; border-radius:6px; border:none; background:transparent; font-weight:600; font-size:.84rem; color:var(--ink-dim)}
+.role-switch button[aria-pressed="true"]{background:var(--surface); color:var(--ink); box-shadow:var(--shadow)}
+
+/* ---- layout shell: journey rendered as a game-style path map ---- */
+.shell{display:flex; gap:1.6em; align-items:flex-start}
+.rail{width:236px; flex:none; position:sticky; top:.8em; display:flex; flex-direction:column; gap:1.3em; max-height:calc(100vh - 1.6em); overflow-y:auto; padding-right:.2em}
+.rail-group{position:relative; background:var(--surface); border:1.5px solid var(--line); border-radius:12px; padding:.8em .8em .9em; box-shadow:var(--shadow)}
+.rail-group-label{display:flex; align-items:center; gap:.5em; font-family:var(--font-mono); font-size:.7rem; text-transform:uppercase; letter-spacing:.05em; font-weight:700; padding:0 0 .7em; color:var(--ink-dim)}
+.rail-group-label .zone-badge{width:1.9em; height:1.9em; border-radius:50%; display:flex; align-items:center; justify-content:center; flex:none; background:var(--surface-2); color:var(--ink-dim); border:1.5px solid var(--line)}
+.rail-group[data-accent="water"] .zone-badge{background:var(--water-soft); color:var(--water-ink); border-color:var(--water)}
+.rail-group[data-accent="food"] .zone-badge{background:var(--food-soft); color:var(--food-ink); border-color:var(--food)}
+.rail-group[data-accent="plum"] .zone-badge{background:var(--plum-soft); color:var(--plum-ink); border-color:var(--plum)}
+.rail-group[data-accent="good"] .zone-badge{background:var(--good-soft); color:var(--good); border-color:var(--good)}
+.rail-group-items{position:relative; display:flex; flex-direction:column; gap:.3em}
+.rail-group-items::before{content:'';position:absolute; left:1.15em; top:0; bottom:0; width:2px; background:repeating-linear-gradient(to bottom, var(--line) 0 5px, transparent 5px 9px); z-index:0}
+.rail-step{position:relative; z-index:1; display:flex; align-items:center; gap:.7em; padding:.4em .4em; border-radius:9px; border:none; background:transparent; text-align:left; width:100%; color:var(--ink-dim)}
+.rail-step:nth-child(2n){transform:translateX(7px)}
+.rail-step .dot{position:relative; width:2.1em; height:2.1em; border-radius:50%; border:2px solid var(--line); flex:none; display:flex; align-items:center; justify-content:center; background:var(--surface); color:var(--ink-dim)}
+.rail-step .lbl{display:flex; flex-direction:column; min-width:0}
+.rail-step .lbl .name{font-size:.84rem; font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.rail-step[aria-current="step"]{background:var(--surface-2)}
+.rail-step[aria-current="step"]{color:var(--ink)}
+.rail-step[aria-current="step"] .dot{border-color:var(--ink); color:var(--ink); box-shadow:0 0 0 4px var(--surface-2)}
+.rail-group[data-accent="water"] .rail-step[aria-current="step"] .dot{border-color:var(--water); color:var(--water-ink)}
+.rail-group[data-accent="food"] .rail-step[aria-current="step"] .dot{border-color:var(--food); color:var(--food-ink)}
+.rail-group[data-accent="plum"] .rail-step[aria-current="step"] .dot{border-color:var(--plum); color:var(--plum-ink)}
+.rail-group[data-accent="good"] .rail-step[aria-current="step"] .dot{border-color:var(--good); color:var(--good)}
+@media (prefers-reduced-motion:no-preference){
+  .rail-step[aria-current="step"] .dot::after{content:'';position:absolute; inset:-5px; border-radius:50%; border:2px solid currentColor; opacity:.5; animation:pulseRing 1.8s ease-out infinite}
+}
+@keyframes pulseRing{0%{transform:scale(.8); opacity:.6}100%{transform:scale(1.35); opacity:0}}
+.rail-step.done .dot{background:var(--good); color:var(--accent-text); border-color:var(--good)}
+.rail-step.done{color:var(--ink)}
+.rail-step .star{position:absolute; top:-5px; right:-5px; width:1.1em; height:1.1em; border-radius:50%; background:var(--food); color:#fff; display:flex; align-items:center; justify-content:center; border:1.5px solid var(--surface)}
+.rail-step:disabled .dot{color:var(--ink-dim); opacity:.6}
+.rail-step:disabled{opacity:.55}
+.main{flex:1; min-width:0; max-width:760px}
+@media (max-width:860px){
+  .shell{flex-direction:column}
+  .rail{position:static; width:100%; max-height:none; flex-direction:row; overflow-x:auto; overflow-y:visible; gap:.8em; padding-bottom:.4em; -webkit-overflow-scrolling:touch; align-items:stretch}
+  .rail-group{flex:none; min-width:220px}
+  .main{max-width:100%}
+}
+
+/* ---- XP bar ---- */
+.xpbar{display:flex; align-items:center; gap:.8em; max-width:1180px; margin:0 auto .9em; padding:0 max(16px, env(safe-area-inset-left,0px)) 0 max(16px, env(safe-area-inset-right,0px))}
+.xpbar .xp-title{font-family:var(--font-mono); font-size:.72rem; text-transform:uppercase; letter-spacing:.04em; font-weight:700; color:var(--ink-dim); white-space:nowrap}
+.xpbar .xp-track{flex:1; height:8px; border-radius:999px; background:var(--surface-2); border:1.5px solid var(--line); overflow:hidden}
+.xpbar .xp-fill{height:100%; border-radius:999px; transition:width .4s ease}
+.xpbar .xp-badge-count{font-family:var(--font-mono); font-size:.72rem; color:var(--ink-dim); white-space:nowrap; display:flex; align-items:center; gap:.3em}
+.topbar,#xpbar,#main{position:relative; z-index:1}
+h1,h2,h3,h4{letter-spacing:.01em}
+.wordmark{text-shadow:0 0 12px rgba(0,229,255,.35)}
+.btn-primary{box-shadow:0 0 0 1px var(--ink), 0 0 16px rgba(0,229,255,.25)}
+.btn-water{box-shadow:0 0 14px rgba(0,229,255,.4)}
+.btn-food{box-shadow:0 0 14px rgba(255,157,46,.4)}
+.card,.card-flat{box-shadow:var(--shadow)}
+
+/* ---- cards & chrome ---- */
+.card{background:var(--surface); border:1.5px solid var(--line); border-radius:var(--radius); padding:1.2em; box-shadow:var(--shadow); margin-bottom:1.1em}
+.card-flat{background:var(--surface-2); border:1.5px solid var(--line); border-radius:var(--radius); padding:1em 1.1em; margin-bottom:.9em}
+.eyebrow{font-family:var(--font-mono); font-size:.72rem; text-transform:uppercase; letter-spacing:.07em; color:var(--water-ink); font-weight:600; display:flex; align-items:center; gap:.5em; margin-bottom:.4em}
+.eyebrow.food{color:var(--food-ink)}
+.badge{display:inline-flex; align-items:center; gap:.35em; font-size:.74rem; font-weight:700; padding:.22em .6em; border-radius:999px; font-family:var(--font-mono); text-transform:uppercase; letter-spacing:.03em}
+.badge-good{background:var(--good-soft); color:var(--good)}
+.badge-warn{background:var(--warn-soft); color:var(--warn)}
+.badge-water{background:var(--water-soft); color:var(--water-ink)}
+.badge-food{background:var(--food-soft); color:var(--food-ink)}
+.badge-neutral{background:var(--surface-2); color:var(--ink-dim); border:1px solid var(--line)}
+.divider{height:1.5px; background:var(--line); border:none; margin:1em 0}
+.hero-band{position:relative; overflow:hidden; background:linear-gradient(155deg, #0a1030, #03050c 65%); border:1.5px solid var(--water); box-shadow:var(--shadow); color:var(--ink); border-radius:var(--radius); padding:1.5em 1.5em 1.4em; margin-bottom:1.2em}
+.hero-band h1{color:#fff; text-shadow:0 0 14px rgba(0,229,255,.4)}
+.hero-band p{color:var(--ink-dim)}
+.hero-band .hero-copy{position:relative; z-index:1; max-width:60%}
+.hero-band .hero-art{position:absolute; inset:auto -6% -4% auto; width:62%; max-width:340px; opacity:.95; pointer-events:none}
+@media (max-width:620px){
+  .hero-band .hero-copy{max-width:100%}
+  .hero-band .hero-art{opacity:.22; inset:0; width:100%; max-width:none}
+}
+.scenario-banner{border-radius:var(--radius); overflow:hidden; margin-bottom:1em; height:140px; background:linear-gradient(155deg, #0a1030, #03050c 65%); border:1.5px solid var(--water)}
+.scenario-banner svg{height:100%}
+.icon-inline{display:inline-flex; align-items:center; gap:.45em}
+.icon-inline svg{flex:none}
+.hotspot-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:.7em}
+
+/* ---- achievement badges + confetti ---- */
+.badge-shelf{display:grid; grid-template-columns:repeat(auto-fill,minmax(130px,1fr)); gap:.8em}
+.achv{display:flex; flex-direction:column; align-items:center; text-align:center; gap:.45em; padding:1em .6em; border-radius:12px; border:1.5px solid var(--line); background:var(--surface-2)}
+.achv.earned{background:var(--surface); border-color:var(--food); box-shadow:var(--shadow)}
+.achv .achv-ico{width:2.6em; height:2.6em; border-radius:50%; display:flex; align-items:center; justify-content:center; background:var(--line); color:var(--ink-dim)}
+.achv.earned .achv-ico{background:var(--food-soft); color:var(--food-ink)}
+.achv .achv-name{font-size:.78rem; font-weight:700}
+.achv .achv-desc{font-size:.7rem; color:var(--ink-dim); line-height:1.3}
+#confettiLayer{position:fixed; inset:0; pointer-events:none; z-index:999}
+@media (prefers-reduced-motion:reduce){ #confettiLayer{display:none} }
+
+/* ---- narrator / mission-comms dialog (sits in normal flow above the
+   step card, never overlapping nav buttons) ---- */
+#narrator{max-width:1180px; margin:0 auto .9em; padding:0 max(16px, env(safe-area-inset-left,0px)) 0 max(16px, env(safe-area-inset-right,0px))}
+#narrator[hidden]{display:none}
+.narrator-inner{max-width:760px; margin:0 auto; display:flex; gap:.8em; align-items:flex-end}
+.narrator-avatar{width:3em; height:3em; border-radius:50%; flex:none; display:flex; align-items:center; justify-content:center; background:var(--surface); border:2px solid var(--water); color:var(--water); box-shadow:0 0 16px rgba(0,229,255,.5)}
+.narrator-box{flex:1; background:var(--surface); border:1.5px solid var(--water); border-radius:12px 12px 12px 2px; padding:.9em 1.1em; box-shadow:var(--shadow); cursor:pointer; position:relative}
+.narrator-name{font-family:var(--font-mono); font-size:.72rem; letter-spacing:.08em; text-transform:uppercase; color:var(--plum); font-weight:700; margin-bottom:.25em}
+.narrator-text{font-size:1rem; line-height:1.4; min-height:1.4em}
+.narrator-adv{position:absolute; bottom:.5em; right:.7em; color:var(--water); font-size:.8rem}
+.narrator-close{position:absolute; top:.4em; right:.5em; background:none; border:none; color:var(--ink-dim); font-size:.9rem; line-height:1; padding:.3em}
+@media (prefers-reduced-motion:no-preference){
+  .narrator-text.typing::after{content:'▌'; animation:blinkCaret .8s step-end infinite; color:var(--water)}
+}
+@keyframes blinkCaret{50%{opacity:0}}
+
+/* ---- token planner ---- */
+.token-grid{display:grid; grid-template-columns:1fr 1fr; gap:.7em}
+@media (max-width:520px){ .token-grid{grid-template-columns:1fr} }
+.token-row{display:flex; align-items:center; gap:.6em; background:var(--surface-2); border:1.5px solid var(--line); border-radius:8px; padding:.55em .7em}
+.token-row .ico{width:2em; height:2em; border-radius:7px; display:flex; align-items:center; justify-content:center; flex:none; font-size:1em}
+.token-row.water .ico{background:var(--water-soft); color:var(--water-ink)}
+.token-row.food .ico{background:var(--food-soft); color:var(--food-ink)}
+.token-row .tr-label{flex:1; min-width:0}
+.token-row .tr-label .t-name{font-weight:600; font-size:.88rem; display:block}
+.token-row .tr-label .t-sub{font-size:.74rem; color:var(--ink-dim)}
+.token-row input{width:4.2em; text-align:right; font-family:var(--font-mono); font-weight:600; flex:none}
+.token-total{display:flex; align-items:center; justify-content:space-between; padding:.9em 1em; border-radius:9px; margin-top:.9em; font-family:var(--font-mono); font-weight:700}
+.token-total.ok{background:var(--good-soft); color:var(--good)}
+.token-total.over{background:var(--warn-soft); color:var(--warn)}
+.token-total .big{font-size:1.3rem}
+
+/* ---- gallery / comparison wall ---- */
+.wall-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:.9em}
+.plan-card{border:1.5px solid var(--line); border-radius:var(--radius); padding:1em; background:var(--surface)}
+.plan-card.mine{border-color:var(--water); box-shadow:0 0 0 2px var(--water-soft)}
+.bar-chart{display:flex; flex-direction:column; gap:.3em; margin:.7em 0}
+.bar-row{display:grid; grid-template-columns:5.6em 1fr 2.2em; align-items:center; gap:.5em; font-size:.74rem}
+.bar-row .lab{color:var(--ink-dim); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:inline-flex; align-items:center; gap:.3em}
+.bar-row .lab svg{flex:none}
+.bar-track{background:var(--surface-2); border-radius:5px; height:9px; overflow:hidden}
+.bar-fill{height:100%; border-radius:5px}
+.bar-fill.water{background:var(--water)} .bar-fill.food{background:var(--food)}
+.bar-row .val{font-family:var(--font-mono); text-align:right}
+
+/* ---- comments ---- */
+.comment{border-left:3px solid var(--water); background:var(--surface-2); border-radius:0 8px 8px 0; padding:.6em .8em; margin-bottom:.6em; font-size:.9rem}
+.comment .meta{font-size:.72rem; color:var(--ink-dim); margin-bottom:.2em; font-family:var(--font-mono)}
+.comment.q{border-left-color:var(--food)}
+
+/* ---- quiz ---- */
+.quiz-opt{display:block; width:100%; text-align:left; padding:.65em .8em; border-radius:8px; border:1.5px solid var(--line); background:var(--surface); margin-bottom:.5em}
+.quiz-opt[aria-pressed="true"]{border-color:var(--water); background:var(--water-soft)}
+.quiz-opt.correct{border-color:var(--good); background:var(--good-soft)}
+.quiz-opt.incorrect{border-color:var(--warn); background:var(--warn-soft)}
+
+/* ---- tables (dashboard) ---- */
+.tbl-wrap{overflow-x:auto; border:1.5px solid var(--line); border-radius:var(--radius)}
+table{border-collapse:collapse; width:100%; font-size:.86rem; min-width:560px}
+th,td{text-align:left; padding:.6em .8em; border-bottom:1px solid var(--line); vertical-align:top}
+thead th{background:var(--surface-2); font-family:var(--font-mono); font-size:.72rem; text-transform:uppercase; letter-spacing:.04em; color:var(--ink-dim); font-weight:600}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover{background:var(--surface-2)}
+
+/* ---- dashboard stat tiles ---- */
+.stat-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:.8em; margin-bottom:1.1em}
+.stat-tile{background:var(--surface); border:1.5px solid var(--line); border-radius:var(--radius); padding:1em}
+.stat-tile .n{font-family:var(--font-mono); font-size:1.7rem; font-weight:700; display:block}
+.stat-tile .l{font-size:.78rem; color:var(--ink-dim)}
+.donut-row{display:flex; flex-wrap:wrap; gap:2.2em}
+.donut-item{display:flex; align-items:center; gap:1em}
+.donut-legend{display:flex; flex-direction:column; gap:.35em; font-size:.82rem}
+.donut-legend span{display:flex; align-items:center; gap:.5em}
+.donut-legend i{width:.8em; height:.8em; border-radius:3px; display:inline-block; flex:none}
+
+/* ---- tabs (teacher) ---- */
+.tabbar{display:flex; gap:.3em; border-bottom:1.5px solid var(--line); margin-bottom:1.3em; overflow-x:auto}
+.tabbar button{padding:.65em 1em; border:none; background:none; font-weight:600; color:var(--ink-dim); border-bottom:2.5px solid transparent; white-space:nowrap; font-size:.9rem}
+.tabbar button[aria-selected="true"]{color:var(--ink); border-bottom-color:var(--water)}
+
+/* ---- misc ---- */
+.feedback-score{display:flex; gap:.3em}
+.fscore-btn{width:2.1em; height:2.1em; border-radius:7px; border:1.5px solid var(--line); background:var(--surface); font-family:var(--font-mono); font-weight:700}
+.fscore-btn[aria-pressed="true"]{background:var(--ink); color:var(--bg); border-color:var(--ink)}
+.evidence-card{border:1.5px solid var(--line); border-radius:9px; padding:.9em 1em; margin-bottom:.7em; background:var(--surface-2)}
+.evidence-card .src{font-family:var(--font-mono); font-size:.72rem; color:var(--ink-dim); margin-top:.4em; display:block}
+.frame-pill{display:inline-block; font-family:var(--font-mono); font-size:.7rem; background:var(--surface-2); border:1px solid var(--line); padding:.25em .55em; border-radius:6px; margin:.1em .3em .1em 0}
+.toggle{display:inline-flex; align-items:center; gap:.5em; cursor:pointer}
+.toggle input{width:2.4em; height:1.4em; appearance:none; background:var(--line); border-radius:999px; position:relative; border:none; padding:0; cursor:pointer}
+.toggle input::after{content:'';position:absolute; width:1.1em; height:1.1em; border-radius:50%; background:#fff; top:.15em; left:.15em; transition:left .15s}
+.toggle input:checked{background:var(--water)}
+.toggle input:checked::after{left:1.15em}
+.empty-state{text-align:center; padding:2.4em 1em; color:var(--ink-dim)}
+.aicoach-off{opacity:.6}
+.pill-row{display:flex; flex-wrap:wrap; gap:.4em}
+.journey-map{display:flex; flex-wrap:wrap; gap:.3em; align-items:center; font-family:var(--font-mono); font-size:.76rem; color:var(--ink-dim); margin:.6em 0 1em}
+.journey-map b{color:var(--ink)}
+.hotspot{border:1.5px dashed var(--line); border-radius:9px; padding:.8em; margin-bottom:.6em}
+.hotspot.water{border-color:var(--water); background:var(--water-soft)}
+.hotspot.water strong{color:var(--water-ink)}
+.hotspot.food{border-color:var(--food); background:var(--food-soft)}
+.hotspot.food strong{color:var(--food-ink)}
+footer.page-end{margin:2.4em 0 1.2em; padding-top:1.1em; border-top:1.5px solid var(--line); font-size:.78rem; color:var(--ink-dim)}
+</style>
+
+<div class="bg-glow" aria-hidden="true"></div>
+<div class="scanlines" aria-hidden="true"></div>
+<a href="#main" class="skip-link">Skip to content</a>
+
+<div class="topbar" role="banner">
+  <div class="wordmark"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10.4" fill="var(--water)" opacity=".14"/><path d="M5.5 14.3a4 4 0 0 0 13 0" stroke="var(--water)" stroke-width="1.8" stroke-linecap="round"/><path d="M7.8 10.6a2.8 2.8 0 0 0 8.4 0" stroke="var(--food)" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="7.3" r="1.7" fill="var(--water)"/></svg> Supply Shock 2040 <span class="tag">ILE</span></div>
+  <div class="topbar-spacer"></div>
+  <nav class="role-switch" aria-label="Choose view" id="roleSwitch">
+    <button id="btnViewStudent" aria-pressed="true">Group room</button>
+    <button id="btnViewTeacher" aria-pressed="false">Teacher dashboard</button>
+  </nav>
+  <div class="a11y-controls" aria-label="Accessibility controls">
+    <button class="fs-btn" id="soundBtn" aria-label="Toggle celebration sound" title="Toggle sound"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.8 9.7h3.1L11.8 5v14l-4.9-4.7H3.8Z"/><path d="M15.3 9.1a4 4 0 0 1 0 5.8"/><path d="M17.8 6.9a7.4 7.4 0 0 1 0 10.2"/></svg></button>
+    <button class="fs-btn" id="fsDown" aria-label="Decrease text size">A-</button>
+    <button class="fs-btn" id="fsUp" aria-label="Increase text size">A+</button>
+    <button class="fs-btn" id="contrastBtn" aria-label="Toggle high contrast / dark mode" title="Toggle theme">◐</button>
+  </div>
+</div>
+<div id="xpbar" class="xpbar" hidden></div>
+<div id="narrator" hidden role="status" aria-live="polite">
+  <div class="narrator-inner">
+    <div class="narrator-avatar" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20.5v-5"/><circle cx="12" cy="12" r="2.1"/><path d="M8.4 8.4a5 5 0 0 0 0 7.2"/><path d="M15.6 8.4a5 5 0 0 1 0 7.2"/><path d="M5.3 5.3a9.4 9.4 0 0 0 0 13.4"/><path d="M18.7 5.3a9.4 9.4 0 0 1 0 13.4"/></svg></div>
+    <div class="narrator-box" id="narratorBox">
+      <button class="narrator-close" id="narratorClose" aria-label="Dismiss message" type="button">✕</button>
+      <div class="narrator-name" id="narratorName">COMMANDER KAI</div>
+      <div class="narrator-text" id="narratorText"></div>
+      <div class="narrator-adv" aria-hidden="true">▼</div>
+    </div>
+  </div>
+</div>
+
+<main id="main"></main>
+
+<script>
+/* ======================================================================
+   SUPPLY SHOCK 2040 — Interactive Learning Environment
+   Built for MLT908 individual artefact, implementing the group PST
+   design specification ("Securing Singapore's Water and Food Supply
+   in a Changing Climate"). Single-file, offline-capable, no network
+   calls. All class data lives in this browser only (see Settings tab).
+   ====================================================================== */
+(function(){
+"use strict";
+
+/* ---------------------------------------------------------------- *
+ * 0a. ICONOGRAPHY — a small bespoke line-icon set (replaces emoji)
+ *     plus two decorative illustrations, all inline SVG so the page
+ *     stays a single offline file and every icon inherits theme color.
+ * ---------------------------------------------------------------- */
+const ICONS = {
+  drop: '<path d="M12 2.5c3.6 4.9 7.2 9.2 7.2 13a7.2 7.2 0 1 1-14.4 0c0-3.8 3.6-8.1 7.2-13Z"/>',
+  tap: '<path d="M3.5 8.5h10a4 4 0 0 1 4 4v1.2"/><path d="M3.5 8.5V6a2 2 0 0 1 2-2h3.2"/><circle cx="17.3" cy="17.3" r="3.4"/><path d="M17.3 13.9v-2.4"/>',
+  recycle: '<path d="M7.7 3.6 10.3 8l-4.2.5"/><path d="M4.4 12.3 2 16.6l5 .2"/><path d="M13 20.6l4.3-.3-1.7-4.5"/><path d="M10 8h4.9l2.5 4.4"/><path d="M5 15l-2.9 1.6 2.7 4.5"/><path d="M14.7 20.3 17 16l4.7.4"/>',
+  wave: '<path d="M2 8.8c1.6-1.6 3.2-1.6 4.8 0s3.2 1.6 4.8 0 3.2-1.6 4.8 0 3.2 1.6 4.8 0"/><path d="M2 14.8c1.6-1.6 3.2-1.6 4.8 0s3.2 1.6 4.8 0 3.2-1.6 4.8 0 3.2 1.6 4.8 0"/><path d="M2 20.6c1.6-1.6 3.2-1.6 4.8 0s3.2 1.6 4.8 0 3.2-1.6 4.8 0 3.2 1.6 4.8 0"/>',
+  globe: '<circle cx="12" cy="12" r="8.4"/><path d="M3.6 12h16.8"/><path d="M12 3.6a13.4 13.4 0 0 1 0 16.8"/><path d="M12 3.6a13.4 13.4 0 0 0 0 16.8"/>',
+  handshake: '<path d="M2.3 11.3 7 6.8l3 2 3-2 4.7 4.5"/><path d="M7 6.8l6 6"/><path d="M10.4 9.6 6.4 13.5a1.8 1.8 0 0 0 2.5 2.5"/><path d="M13 12.1l-3.6 3.6a1.8 1.8 0 0 0 2.5 2.5l.6-.5"/><path d="M15.6 9.6l-4.2 4.1a1.8 1.8 0 0 0 2.5 2.6"/>',
+  box: '<path d="M3.3 7.6 12 3l8.7 4.6L12 12.2 3.3 7.6Z"/><path d="M3.3 7.6v8.9L12 21l8.7-4.5V7.6"/><path d="M12 12.2V21"/>',
+  sprout: '<path d="M12 21v-7.4"/><path d="M12 13.6c-4.7 0-7.3-2.6-7.3-7.3 4.7 0 7.3 2.6 7.3 7.3Z"/><path d="M12 10.6c0-4.2 2.1-6.8 6.3-6.8-.2 4.2-2.5 6.8-6.3 6.8Z"/>',
+  basket: '<path d="M3.8 9.8h16.4l-1.7 9.6a2 2 0 0 1-2 1.7H7.5a2 2 0 0 1-2-1.7L3.8 9.8Z"/><path d="M8 9.8 9.6 3.9"/><path d="M16 9.8 14.4 3.9"/><path d="M3.8 9.8 2.2 6.7"/><path d="M20.2 9.8l1.6-3.1"/>',
+  speaker: '<path d="M3.8 9.7h3.1L11.8 5v14l-4.9-4.7H3.8Z"/><path d="M15.3 9.1a4 4 0 0 1 0 5.8"/><path d="M17.8 6.9a7.4 7.4 0 0 1 0 10.2"/>',
+  reservoir: '<path d="M3 16.5c2.2-1.6 4.4-1.6 6.6 0s4.4 1.6 6.6 0 4.4-1.6 6.8 0"/><path d="M3 20c2.2-1.6 4.4-1.6 6.6 0s4.4 1.6 6.6 0 4.4-1.6 6.8 0"/><path d="M6.5 16V9.6a1.5 1.5 0 0 1 1.5-1.5h8a1.5 1.5 0 0 1 1.5 1.5V16"/><path d="M10 8V5.6"/><path d="M14 8V5.6"/>',
+  sun: '<circle cx="12" cy="12" r="4.4"/><path d="M12 2.6v2.6M12 18.8v2.6M4.2 12H1.6M22.4 12h-2.6M5.9 5.9 4.1 4.1M19.9 19.9l-1.8-1.8M18.1 5.9l1.8-1.8M4.1 19.9l1.8-1.8"/>',
+  cloud: '<path d="M7.2 18.4a4.4 4.4 0 0 1-.7-8.7 5.6 5.6 0 0 1 10.9-1.6 4 4 0 0 1-.9 7.9 1 1 0 0 1-.2 0H7.6a1 1 0 0 1-.4-.6Z"/>',
+  chart: '<path d="M4 20V10M10 20V4M16 20v-7M22 20V13"/>',
+  pencil: '<path d="M4 20 4.7 16.3 15.1 5.9a2 2 0 0 1 2.9 0l1.1 1.1a2 2 0 0 1 0 2.9L8.7 19.3 4 20Z"/><path d="M13.3 7.7l3 3"/>',
+  star: '<path d="M12 2.8l2.7 5.9 6.3.6-4.8 4.3 1.4 6.3L12 16.8l-5.6 3.1 1.4-6.3-4.8-4.3 6.3-.6Z"/>',
+  lock: '<rect x="4.5" y="10.6" width="15" height="10.4" rx="2"/><path d="M7.5 10.6V7.4a4.5 4.5 0 0 1 9 0v3.2"/>',
+  flag: '<path d="M5 21V4"/><path d="M5 4h12.5l-3 4.5L17.5 13H5"/>',
+  trophy: '<path d="M7.5 4h9v5a4.5 4.5 0 0 1-9 0V4Z"/><path d="M7.5 5.5H4a3 3 0 0 0 3.3 3"/><path d="M16.5 5.5H20a3 3 0 0 1-3.3 3"/><path d="M12 13.5V17"/><path d="M8.3 20.5h7.4"/><path d="M9.5 17h5l.8 3.5h-6.6Z"/>',
+  signal: '<path d="M12 20.5v-5"/><circle cx="12" cy="12" r="2.1"/><path d="M8.4 8.4a5 5 0 0 0 0 7.2"/><path d="M15.6 8.4a5 5 0 0 1 0 7.2"/><path d="M5.3 5.3a9.4 9.4 0 0 0 0 13.4"/><path d="M18.7 5.3a9.4 9.4 0 0 1 0 13.4"/>',
+  bolt: '<path d="M12.5 2.5 4.5 14h6l-1 7.5 9-13h-6.5l.5-6Z"/>',
+};
+function ic(name, size){
+  size = size||20;
+  return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${ICONS[name]||''}</svg>`;
+}
+// A small ripple logomark for the top-bar wordmark — three concentric arcs
+// standing in for a reservoir surface, doubling water and "signal" motifs.
+function logomark(size){
+  size = size||22;
+  return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+    <circle cx="12" cy="12" r="10.4" fill="var(--water)" opacity=".14"/>
+    <path d="M5.5 14.3a4 4 0 0 0 13 0" stroke="var(--water)" stroke-width="1.8" stroke-linecap="round"/>
+    <path d="M7.8 10.6a2.8 2.8 0 0 0 8.4 0" stroke="var(--food)" stroke-width="1.8" stroke-linecap="round"/>
+    <circle cx="12" cy="7.3" r="1.7" fill="var(--water)"/>
+  </svg>`;
+}
+// Decorative skyline + reservoir illustration used on the hero band and the
+// scenario banner — a flat geometric Singapore skyline above a rippled
+// reservoir, with a sun/cloud pairing standing in for the dry spell.
+function skylineArt(opts){
+  opts = opts || {};
+  const tone = opts.tone || 'light'; // 'light' on dark hero bands, 'ink' on paper cards
+  const sky = tone==='light' ? 'rgba(255,255,255,.14)' : 'var(--water-soft)';
+  const build = tone==='light' ? 'rgba(255,255,255,.9)' : 'var(--water-ink)';
+  const build2 = tone==='light' ? 'rgba(255,255,255,.55)' : 'var(--water)';
+  const water = tone==='light' ? '#BFE4E9' : 'var(--water)';
+  const accent = tone==='light' ? '#F3C988' : 'var(--food)';
+  return `<svg viewBox="0 0 320 180" preserveAspectRatio="xMidYMax meet" aria-hidden="true" focusable="false" style="width:100%;height:100%;display:block">
+    <circle cx="258" cy="42" r="26" fill="${accent}" opacity=".9"/>
+    <g fill="none" stroke="${tone==='light'?'rgba(255,255,255,.8)':'var(--ink-dim)'}" stroke-width="2.4" stroke-linecap="round" opacity=".85">
+      <path d="M196 54a19 19 0 0 1 32-14 14 14 0 0 1 19 13 12 12 0 0 1-3 23h-44a13 13 0 0 1-4-22Z"/>
+    </g>
+    <g fill="${build2}">
+      <rect x="18" y="86" width="20" height="62" rx="2"/>
+      <rect x="44" y="64" width="24" height="84" rx="2"/>
+      <rect x="140" y="98" width="18" height="50" rx="2"/>
+      <rect x="236" y="90" width="20" height="58" rx="2"/>
+    </g>
+    <g fill="${build}">
+      <rect x="74" y="40" width="26" height="108" rx="2"/>
+      <rect x="104" y="72" width="16" height="76" rx="2"/>
+      <rect x="164" y="54" width="22" height="94" rx="2"/>
+      <rect x="190" y="88" width="18" height="60" rx="2"/>
+      <path d="M78 40h18l-9-16-9 16Z"/>
+      <circle cx="175" cy="46" r="7"/>
+    </g>
+    <path d="M0 150c26.7-13.4 53.3-13.4 80 0s53.3 13.4 80 0 53.3-13.4 80 0 53.3 13.4 80 0v30H0Z" fill="${sky}"/>
+    <path d="M0 162c26.7-11.4 53.3-11.4 80 0s53.3 11.4 80 0 53.3-11.4 80 0 53.3 11.4 80 0v18H0Z" fill="${water}" opacity=".9"/>
+  </svg>`;
+}
+// A small multi-segment ring chart for the teacher dashboard — segments is
+// [{value, color}], rendered as stacked stroke-dasharray arcs with a bold
+// center total, used instead of a plain stat tile wherever a proportion
+// (not just a count) is the more useful thing to show at a glance.
+function donutChart(segments, opts){
+  opts = opts || {};
+  const size = opts.size || 108, stroke = opts.stroke || 14;
+  const r = (size-stroke)/2, cx = size/2, cy = size/2, circ = 2*Math.PI*r;
+  const total = segments.reduce((s,seg)=>s+seg.value,0) || 1;
+  let offset = 0;
+  const arcs = segments.map(seg=>{
+    const frac = seg.value/total;
+    const dash = frac*circ;
+    const el = `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${seg.color}" stroke-width="${stroke}" stroke-dasharray="${dash} ${circ-dash}" stroke-dashoffset="${-offset}" stroke-linecap="butt" transform="rotate(-90 ${cx} ${cy})"/>`;
+    offset += dash;
+    return el;
+  }).join('');
+  return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" role="img" aria-label="${esc(opts.label||'')}">
+    <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="var(--line)" stroke-width="${stroke}"/>
+    ${arcs}
+    <text x="${cx}" y="${cy-2}" text-anchor="middle" font-family="var(--font-mono)" font-size="22" font-weight="700" fill="var(--ink)">${esc(opts.center||'')}</text>
+    <text x="${cx}" y="${cy+16}" text-anchor="middle" font-family="var(--font-body)" font-size="9" fill="var(--ink-dim)">${esc(opts.centerSub||'')}</text>
+  </svg>`;
+}
+
+/* ---------------------------------------------------------------- *
+ * 0b. CELEBRATION — a lightweight canvas confetti burst and a short
+ *     synthesized chime, used to mark submissions and badge unlocks.
+ *     Both are generated client-side (no audio/image assets), both
+ *     respect prefers-reduced-motion / the sound-mute toggle, and
+ *     both clean up after themselves.
+ * ---------------------------------------------------------------- */
+function prefersReducedMotion(){
+  try{ return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches; }catch(e){ return false; }
+}
+function confettiBurst(){
+  if(prefersReducedMotion()) return;
+  try{
+    const canvas = document.createElement('canvas');
+    canvas.id = 'confettiLayer';
+    canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+    document.body.appendChild(canvas);
+    const ctx = canvas.getContext('2d');
+    const colors = ['#00e5ff','#ff9d2e','#c061ff','#39ff9d','#ff3b6b'];
+    const pieces = Array.from({length:70}, ()=>({
+      x: canvas.width/2 + (Math.random()-0.5)*160,
+      y: canvas.height*0.18 + (Math.random()-0.5)*40,
+      vx: (Math.random()-0.5)*7,
+      vy: Math.random()*-6 - 3,
+      size: 5+Math.random()*5,
+      color: colors[Math.floor(Math.random()*colors.length)],
+      rot: Math.random()*Math.PI, vr:(Math.random()-0.5)*0.3,
+    }));
+    const gravity = 0.22;
+    let frame = 0;
+    const maxFrames = 95;
+    function tick(){
+      frame++;
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      pieces.forEach(p=>{
+        p.vy += gravity; p.x += p.vx; p.y += p.vy; p.rot += p.vr;
+        ctx.save();
+        ctx.translate(p.x,p.y); ctx.rotate(p.rot);
+        ctx.globalAlpha = Math.max(0, 1 - frame/maxFrames);
+        ctx.fillStyle = p.color;
+        ctx.fillRect(-p.size/2,-p.size/3,p.size,p.size*0.66);
+        ctx.restore();
+      });
+      if(frame<maxFrames) requestAnimationFrame(tick);
+      else canvas.remove();
+    }
+    requestAnimationFrame(tick);
+    setTimeout(()=>{ if(canvas.parentNode) canvas.remove(); }, 3000);
+  }catch(e){ /* canvas unavailable — skip the celebration, never block the action */ }
+}
+let _audioCtx = null;
+function playChime(kind){
+  if(state && state.soundOn===false) return;
+  try{
+    _audioCtx = _audioCtx || new (window.AudioContext||window.webkitAudioContext)();
+    const ctx = _audioCtx;
+    const notes = kind==='badge' ? [523.3,659.3,784.0,1046.5] : [523.3,659.3,784.0];
+    const now = ctx.currentTime;
+    notes.forEach((freq,i)=>{
+      const osc = ctx.createOscillator(); const gain = ctx.createGain();
+      osc.type = 'sine'; osc.frequency.value = freq;
+      const t0 = now + i*0.09;
+      gain.gain.setValueAtTime(0, t0);
+      gain.gain.linearRampToValueAtTime(0.11, t0+0.02);
+      gain.gain.exponentialRampToValueAtTime(0.001, t0+0.32);
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.start(t0); osc.stop(t0+0.34);
+    });
+  }catch(e){ /* Web Audio unavailable — celebration continues silently */ }
+}
+function celebrate(kind){
+  confettiBurst();
+  playChime(kind);
+}
+
+/* ---------------------------------------------------------------- *
+ * 0c. NARRATOR — a short, optional "mission comms" voice that plays
+ *     a one-off line the first time a learner reaches a key moment.
+ *     Lines are purely atmospheric; nothing graded lives here. Each
+ *     key fires once per browser (tracked in state.seenNarrator).
+ *     Typewriter reveal is skipped under prefers-reduced-motion, and
+ *     clicking/advancing or the ✕ always works regardless.
+ * ---------------------------------------------------------------- */
+const NARRATOR_LINES = {
+  welcome: [
+    {name:'SYSTEM', text:'Secure link established. MLT908 resilience simulation loaded.'},
+    {name:'COMMANDER KAI', text:'Advisor, good — you’re online. Singapore, 2040: a prolonged dry spell and a regional food shock are both unfolding.'},
+    {name:'COMMANDER KAI', text:'Your group will draft an emergency allocation together. No pressure to be right — your first instinct is diagnostic data, not a test.'},
+  ],
+  submit: [
+    {name:'COMMANDER KAI', text:'Allocation locked and transmitted. Running it against the shock scenario now — stand by for the consequence report.'},
+  ],
+  consolidate: [
+    {name:'COMMANDER KAI', text:'Before you revise: review the Four National Taps and Singapore Food Story 2 briefings. Every option trades something for resilience.'},
+  ],
+  revise: [
+    {name:'COMMANDER KAI', text:'Second attempt authorised. Use what the evidence and the wall showed you — and watch your dependencies.'},
+  ],
+  writing: [
+    {name:'COMMANDER KAI', text:'Final transfer task. Use the Claim / Evidence / Limitation / Judgement buttons if you need a structural nudge.'},
+  ],
+  done: [
+    {name:'COMMANDER KAI', text:'Transmission received, Advisor. A good policy adviser weighs trade-offs — not a search for the one perfect allocation. Well done.'},
+  ],
+};
+let _narratorQueue = [];
+let _narratorTyping = false;
+let _narratorTimer = null;
+function narratorFire(key){
+  if(!NARRATOR_LINES[key]) return;
+  state.seenNarrator = state.seenNarrator || {};
+  if(state.seenNarrator[key]) return;
+  state.seenNarrator[key] = true;
+  saveState();
+  _narratorQueue = NARRATOR_LINES[key].slice();
+  const box = document.getElementById('narrator');
+  if(!box) return;
+  box.hidden = false;
+  narratorAdvance();
+}
+function narratorAdvance(){
+  const textEl = document.getElementById('narratorText');
+  const nameEl = document.getElementById('narratorName');
+  if(!textEl) return;
+  if(_narratorTyping){
+    clearInterval(_narratorTimer);
+    textEl.textContent = _narratorQueue._current || textEl.textContent;
+    textEl.classList.remove('typing');
+    _narratorTyping = false;
+    return;
+  }
+  if(!_narratorQueue.length){ narratorClose(); return; }
+  const line = _narratorQueue.shift();
+  _narratorQueue._current = line.text;
+  nameEl.textContent = line.name;
+  if(prefersReducedMotion()){
+    textEl.textContent = line.text;
+    return;
+  }
+  _narratorTyping = true;
+  textEl.textContent = '';
+  textEl.classList.add('typing');
+  let i = 0;
+  _narratorTimer = setInterval(()=>{
+    textEl.textContent += line.text.charAt(i);
+    i++;
+    if(i>=line.text.length){ clearInterval(_narratorTimer); _narratorTyping = false; textEl.classList.remove('typing'); }
+  }, 18);
+}
+function narratorClose(){
+  const box = document.getElementById('narrator');
+  if(box) box.hidden = true;
+  clearInterval(_narratorTimer);
+  _narratorTyping = false;
+  _narratorQueue = [];
+}
+
+/* ---------------------------------------------------------------- *
+ * 0d. CONSEQUENCE ENGINE — reads a submitted token plan and narrates
+ *     specific, descriptive consequences. This is deliberately NOT a
+ *     score: the group's own consolidation material is explicit that
+ *     no single allocation is "correct", so the engine never outputs
+ *     a grade or ranking — only cause-and-effect text tied to the
+ *     Four Taps / Food Story trade-offs, to support reasoning about
+ *     the revision rather than optimising toward a hidden target.
+ * ---------------------------------------------------------------- */
+function evaluateConsequences(tokens){
+  const t = tokens || {};
+  const techWater = (t.newater||0) + (t.desal||0);
+  const importWater = t.imported||0;
+  const catchment = t.catchment||0;
+  const importFood = (t.diversify||0) + (t.partner||0);
+  const stockpile = t.stockpile||0;
+  const localFood = t.growlocal||0;
+  const out = [];
+  if(importWater + catchment > 55 && techWater < 20){
+    out.push({sev:'danger', text:'Water: heavy reliance on catchment and imported water with little NEWater/desalination backup — a prolonged regional dry spell would force rationing before rainfall-independent supply can absorb the shock.'});
+  } else if(techWater > 50){
+    out.push({sev:'warning', text:'Water: strong drought-proofing from NEWater/desalination, but that leans hard on energy — worth naming the cost trade-off in your justification.'});
+  } else {
+    out.push({sev:'ok', text:'Water: a workable spread across the Four Taps — no tap is left exposed on its own.'});
+  }
+  if(importFood < 20 && stockpile < 15){
+    out.push({sev:'danger', text:'Food: low import diversification and a thin stockpile — a sudden export restriction (like 2022) would hit supermarket shelves within days, with little buffer.'});
+  } else if(localFood > 35){
+    out.push({sev:'warning', text:'Food: a big bet on Grow Local — land scarcity is the real constraint here, so this pillar alone can’t carry food security.'});
+  } else {
+    out.push({sev:'ok', text:'Food: diversified sourcing plus some buffer — reasonably resilient to a single-source shock.'});
+  }
+  return out;
+}
+
+/* ---------------------------------------------------------------- *
+ * 0. CONTENT — scenario, evidence, consolidation, LORMS, quiz, frame
+ * ---------------------------------------------------------------- */
+const TOKEN_CATS = [
+  {id:'catchment', cat:'water', name:'Local Catchment Water', sub:'Reservoirs & drains — one of the Four National Taps', icon:'drop'},
+  {id:'imported',  cat:'water', name:'Imported Water',        sub:'Piped supply under bilateral agreement',           icon:'tap'},
+  {id:'newater',   cat:'water', name:'NEWater',               sub:'High-grade reclaimed water',                       icon:'recycle'},
+  {id:'desal',     cat:'water', name:'Desalinated Water',     sub:'Treated seawater, energy-intensive',               icon:'wave'},
+  {id:'diversify', cat:'food',  name:'Diversify Food Imports',sub:'Spread sourcing across more countries',            icon:'globe'},
+  {id:'partner',   cat:'food',  name:'Global Partnerships',   sub:'Agreements & investment in overseas production',   icon:'handshake'},
+  {id:'stockpile', cat:'food',  name:'Stockpiling',           sub:'Buffer stocks of staples',                         icon:'box'},
+  {id:'growlocal', cat:'food',  name:'Grow Local',            sub:'Local farms, high-tech and urban production',      icon:'sprout'},
+];
+
+const PRECEDENTS = [
+  {title:'2016 — Linggiu Reservoir stress', body:'A prolonged regional dry spell pushed the Linggiu Reservoir, which supports Singapore’s raw water agreement with Malaysia, to a fraction of its normal storage level, raising questions about how resilient a single-source supply really is (MFA, 2017).', tag:'water'},
+  {title:'2022 — Malaysia chicken export restriction', body:'Malaysia temporarily restricted chicken exports to manage its own domestic supply, and Singapore — which sourced a large share of its live chicken from across the Causeway — felt the effect within days. This was a trade and supply-chain decision, not a climate event (SFA, n.d.-b).', tag:'food'},
+];
+
+const EVIDENCE_SETS = {
+  water:[
+    {title:'Rainfall variability, 1980–2020', body:'Singapore’s annual rainfall total has not fallen sharply, but the pattern inside each year has become patchier — longer dry stretches between heavier bursts. A reservoir system designed around a steady drizzle has to work harder to catch the same amount of water.', src:'Adapted classroom data set, Geography Dept.'},
+    {title:'Four National Taps, capacity shares', body:'Local catchment and imported water historically covered most daily demand; NEWater and desalinated water were built up as supply that does not depend on rainfall at all, at a higher energy cost per litre.', src:'PUB (2024), simplified for classroom use'},
+    {title:'Energy cost of “new water”', body:'Desalination and NEWater both need treatment energy that catchment water does not. Leaning harder on them for resilience also means a bigger electricity bill and a bigger carbon footprint to manage.', src:'Classroom briefing note'},
+  ],
+  food:[
+    {title:'Singapore’s food import share', body:'Singapore imports the large majority of the food it eats, from a wide range of trading partners. That spread is itself a resilience strategy — but it still means almost everything on the table has crossed a border.', src:'SFA (n.d.-a), simplified for classroom use'},
+    {title:'From three baskets to Singapore Food Story 2', body:'An earlier approach talked about three “food baskets” — diversifying import sources, growing more locally, and investing overseas. The current Singapore Food Story 2 regroups this thinking into pillars: diversify imports, build global partnerships, stockpile, and grow local.', src:'Lim (2021); SFA (n.d.-a)'},
+    {title:'Limits of “grow local”', body:'Local production (including high-tech urban farms) is growing, but land is scarce and expensive, so it is realistic as one pillar among several rather than a full replacement for imports.', src:'Classroom briefing note'},
+  ],
+};
+
+const CONSOLIDATION = {
+  taps:[
+    {name:'Local Catchment Water', note:'Depends directly on rainfall — the most exposed tap when dry spells lengthen.'},
+    {name:'Imported Water', note:'Reliable while the agreement holds, but concentrates risk in a single external source.'},
+    {name:'NEWater', note:'Rainfall-independent and highly reusable, at the cost of treatment energy.'},
+    {name:'Desalinated Water', note:'Drought-proof in principle, but the most energy- and cost-intensive tap.'},
+  ],
+  foodStory:[
+    {name:'Diversify Imports', note:'Reduces dependence on any one supplier, but does not remove exposure to global shocks.'},
+    {name:'Global Partnerships', note:'Secures longer-term access through investment and agreements overseas, which takes time to build.'},
+    {name:'Stockpile', note:'Buys time during a short shock; storage and spoilage limit how long it can last.'},
+    {name:'Grow Local', note:'Shortens the supply chain for a small share of food; constrained by Singapore’s land area.'},
+  ],
+  principle:'No allocation is uniquely correct. Every strategy trades resilience for cost, land, energy or time — diversification itself reduces exposure while adding dependencies elsewhere.',
+};
+
+const QUICK_CHECK = [
+  {q:'Which of the Four National Taps is most directly exposed to a prolonged regional dry spell?', opts:['NEWater','Desalinated Water','Local Catchment Water','Imported Water'], correct:2, why:'Catchment water depends on rainfall falling in Singapore and the region it draws from, so a dry spell hits it first.'},
+  {q:'The 2022 chicken export restriction is best described as…', opts:['A direct consequence of climate change','A trade and supply-chain decision by Malaysia','A failure of Singapore’s stockpiling policy','Evidence that food imports should stop'], correct:1, why:'The brief is explicit that this was a trade decision, not something attributed to climate change — it is still useful evidence about exposure, just not a climate example.'},
+  {q:'Which pair best matches a resilience gain with its main cost?', opts:['NEWater — gains rainfall independence, costs treatment energy','Stockpiling — gains unlimited storage, costs nothing','Imported water — gains full independence, costs nothing','Grow Local — replaces all food imports, costs little land'], correct:0, why:'Every strategy in this unit trades something for resilience; NEWater trades energy cost for rainfall-independence.'},
+  {q:'“Diversify imports” and “global partnerships” both mainly address which kind of risk?', opts:['Running out of land in Singapore','Over-reliance on any single external source','Rainfall falling in Singapore itself','The cost of desalination energy'], correct:1, why:'Both pillars spread Singapore’s food sourcing across more partners, so a shock to one source has a smaller effect.'},
+];
+
+const LORMS = [
+  {level:'Level 1', band:'1–2 marks', desc:'Describes one or more strategies with little explanation. No clear link between evidence and the judgement asked for.'},
+  {level:'Level 2', band:'3–4 marks', desc:'Explains how a strategy helps, with some relevant evidence, but trade-offs or limitations are missing or only asserted.'},
+  {level:'Level 3', band:'5–6 marks', desc:'Evaluates the strategy using evidence and at least one genuine limitation, moving toward a judgement.'},
+  {level:'Level 4', band:'7–8 marks', desc:'A substantiated, qualified judgement (“to what extent…”) that weighs evidence against limitations rather than picking one side.'},
+];
+
+const CELJ_PROMPTS = {
+  claim:'State your overall position in one sentence — to what extent do you think expanding local food production strengthens food security?',
+  evidence:'What dated evidence (from the jigsaw, the wall, or class consolidation) supports your claim? Name it specifically.',
+  limitation:'What limits this strategy, or what would a critic point out? Land area, cost, scale — be specific.',
+  judgement:'Weigh the evidence against the limitation. What is your qualified conclusion — not a flat yes or no?',
+};
+
+const WRITING_PROMPT = 'To what extent can expanding local food production strengthen Singapore’s food security in a changing climate?';
+
+const ROLES = ['Facilitator','Evidence checker','Recorder','Questioner'];
+const ROLE_BLURBS = {
+  'Facilitator':'Makes sure every member contributes an idea before the group locks in an allocation.',
+  'Evidence checker':'Cross-references the group’s assumptions against the precedents and evidence sets.',
+  'Recorder':'Documents the trade-offs discussed and logs the group’s final rationale.',
+  'Questioner':'Challenges comfortable assumptions — "what if more than one shock hits at once?"',
+};
+
+// Achievement badges — purely motivational, never part of the LORMS grade.
+// Each `test` reads straight off Group 1's live state.
+const BADGES = [
+  {id:'first-idea', icon:'sprout', name:'First Idea', desc:'Posted your silent individual idea', test:g=>{ const m=g.individualIdeas.find(i=>i.studentId==='you'); return !!(m&&m.text&&m.text.trim()); }},
+  {id:'first-draft', icon:'box', name:'Drafted', desc:'Submitted your group’s first token plan', test:g=>g.plan.versions.length>0},
+  {id:'quick-thinker', icon:'star', name:'Quick Thinker', desc:'Scored 4/4 on the quick check', test:g=>g.quickCheck.attempted && g.quickCheck.score===g.quickCheck.total},
+  {id:'revisionist', icon:'recycle', name:'Revisionist', desc:'Revised your plan after consolidation', test:g=>g.plan.versions.length>1},
+  {id:'commentator', icon:'handshake', name:'Commentator', desc:'Commented on two other groups’ plans', test:g=>g.commentsGiven.length>=2},
+  {id:'writer', icon:'pencil', name:'Policy Writer', desc:'Submitted your individual response', test:g=>g.individualWriting.some(w=>w.studentId==='you' && w.text && w.text.trim())},
+  {id:'reflective', icon:'flag', name:'Reflective', desc:'Submitted your closing reflection', test:g=>g.reflections.some(r=>r.studentId==='you' && r.text && r.text.trim())},
+];
+function earnedBadgeIds(g){ return BADGES.filter(b=>b.test(g)).map(b=>b.id); }
+function checkBadges(){
+  const g = g1();
+  const earned = earnedBadgeIds(g);
+  const prev = state.earnedBadges || [];
+  const fresh = earned.filter(id=>!prev.includes(id));
+  if(fresh.length){ state.earnedBadges = earned; celebrate('badge'); }
+  else if(earned.length!==prev.length){ state.earnedBadges = earned; }
+}
+
+const EDCAFE_URL = 'https://edcafe.example.sg/coach'; // replace with your school's approved EdCafe link
+
+/* ---------------------------------------------------------------- *
+ * 1. SEED DATA — 7 groups of "classmates" so the wall & dashboard
+ *    are populated from the first screen. Group 1 is yours and live.
+ * ---------------------------------------------------------------- */
+function blankTokens(){ const t={}; TOKEN_CATS.forEach(c=>t[c.id]=0); return t; }
+function tokensTotal(t){ return TOKEN_CATS.reduce((s,c)=>s+(Number(t[c.id])||0),0); }
+
+const SEED_NAMES = [
+  ['Rae','Dinesh','Farah','Wei Jie'],
+  ['Hui Min','Arjun','Nabilah','Kai Ern'],
+  ['Shu Hui','Vignesh','Iman','Jun Hao'],
+  ['Alyssa','Pravin','Siti','Marcus T.'],
+  ['Natalie','Harith','Pooja','Zhi Wei'],
+  ['Clara','Firdaus','Meera','Kenji'],
+  ['Joy','Rizwan','Chloe','Aidil'],
+];
+
+function makeSeedGroup(n, idx){
+  const members = SEED_NAMES[idx].map((name,i)=>({id:'s'+n+'_'+i, name, roleL1:ROLES[i%4], roleL2:ROLES[(i+1)%4], roleL3:ROLES[(i+2)%4]}));
+  const profiles = [
+    {catchment:18,imported:22,newater:16,desal:10,diversify:14,partner:8,stockpile:6,growlocal:6, risk:'If the dry spell runs long, our water side leans on imports more than the brief warns is wise.'},
+    {catchment:10,imported:10,newater:22,desal:20,diversify:12,partner:8,stockpile:8,growlocal:10, risk:'Heavy spend on NEWater and desalination — we are betting on energy security over land security.'},
+    {catchment:14,imported:14,newater:14,desal:14,diversify:14,partner:8,stockpile:8,growlocal:14, risk:'An even spread feels safe but may not actually prepare us for one specific shock.'},
+    {catchment:12,imported:8,newater:18,desal:12,diversify:10,partner:6,stockpile:14,growlocal:20, risk:'We went all-in on growing local — land constraints could undercut this allocation.'},
+    {catchment:16,imported:18,newater:12,desal:8,diversify:18,partner:10,stockpile:8,growlocal:10, risk:'We stayed close to today’s real-world shares; a true 2040 shock might demand more change than this.'},
+    {catchment:8,imported:8,newater:20,desal:18,diversify:20,partner:12,stockpile:6,growlocal:8, risk:'Import diversification is strong, but our stockpile is thin for a sudden short-term shock.'},
+    {catchment:14,imported:16,newater:14,desal:10,diversify:12,partner:14,stockpile:10,growlocal:10, risk:'Balanced, but we have not stress-tested it against the chicken-export scenario specifically.'},
+  ][idx];
+  const v1 = {version:1, tokens:{...profiles}, risk:profiles.risk, justification:'First-pass allocation from our silent ideas, before consolidation.', timestamp: daysAgo(6,idx), submittedBy:members[0].name};
+  const revised = idx%2===0 || idx===5;
+  const versions = [v1];
+  if (revised){
+    const t2 = {...profiles};
+    // nudge toward Four Taps / Food Story balance after consolidation
+    t2.newater += 2; t2.growlocal += 2; t2.imported = Math.max(4, t2.imported-2); t2.stockpile = Math.max(2, t2.stockpile-2);
+    versions.push({version:2, tokens:t2, risk:profiles.risk, justification:'After consolidation we diversified our rainfall-independent water taps and nudged toward local growing, accepting the energy/land cost.', timestamp: daysAgo(3,idx), submittedBy:members[1].name});
+  }
+  const quickCheckScore = [3,4,2,3,4,3,2][idx];
+  const feedbackQuality = [[2,1],[1,0],[2,2],[0,1],[2,1],[1,1],[2,0]][idx];
+  const WEAK = [
+    {text:'Expanding local food production helps Singapore to some extent because it means less food comes from overseas. This is good because other countries might stop selling us food. So this strategy is quite good for Singapore and should be used more.', level:0},
+    {text:'I think local food production is a good idea for Singapore. It means we grow our own vegetables and fish instead of buying from other countries. This will help Singapore in a changing climate.', level:0},
+    {text:'Local food production strengthens food security because Singapore will not need to depend on other countries as much. The high-tech farms mentioned in class can produce a lot of food. This is a good strategy to use more of.', level:1},
+    {text:'To some extent, growing more food locally helps Singapore. It reduces how much we need to import. But Singapore is small, so this might not work for everything we eat.', level:1},
+    {text:'Expanding local food production is helpful because it is a backup plan if imports get disrupted, like the chicken example. It gives Singapore more control over its food.', level:1},
+    {text:'Local food production can help food security because it means Singapore relies less on imports. However, there is not much land in Singapore for farming, which is a problem.', level:1},
+    {text:'I believe local food production is important for Singapore because of climate change. If other countries have bad harvests, Singapore can still grow some of its own food.', level:0},
+  ];
+  const STRONG = [
+    {text:'Local food production can strengthen Singapore’s food security to a moderate extent. Expanding high-tech farms reduces reliance on any single import source, which matters given the 2022 export restriction example. However, land scarcity is a genuine limit — local production supplies only a small fraction of total consumption. Local growth is best read as one pillar strengthening resilience rather than the main solution.', level:3},
+    {text:'Expanding local food production strengthens food security to a limited but real extent. It shortens the supply chain for part of Singapore’s diet and reduces exposure to a single shock, as the 2022 export restriction illustrates. The clear limitation is scale: Singapore’s land area caps how much local farms can ever supply, even with vertical farming. Judged against diversified imports and stockpiling, which face less of this ceiling, local production strengthens resilience mainly at the margins.', level:2},
+    {text:'To a considerable extent, local food production strengthens resilience, since it removes dependence on any one trading partner for that portion of supply. Dated evidence from the Food Story 2 pillars shows this is treated as one of four complementary strategies rather than a stand-alone fix. The limitation is that high-tech farms are costly to scale and land-constrained, so the realistic ceiling is a minority share of total consumption — meaning the strategy strengthens but cannot alone secure food supply.', level:3},
+    {text:'Local food production helps to some extent, mainly by reducing exposure to a single supplier disruption. But its contribution is capped by land availability, so on its own it cannot replace diversified imports or stockpiling. A qualified judgement would say it strengthens resilience modestly, as part of a wider mix of strategies rather than the main lever.', level:2},
+    {text:'Growing more food locally strengthens Singapore’s position to a fair extent, since it is the one strategy that does not depend on any external partner at all. The limitation is scale and cost — land is scarce and high-tech farming is capital-intensive, so growth has to be weighed against cheaper, faster gains from diversifying import sources.', level:2},
+    {text:'Expanding local food production strengthens food security to a moderate extent only. The 2022 case shows how fast an import shock can bite, which local supply partly insulates against. However, because Singapore’s land area is fixed, the strategy has a low ceiling compared to diversifying imports or building overseas partnerships, so it should be judged as a useful but secondary pillar.', level:3},
+    {text:'Local food production strengthens Singapore’s food security to a real but bounded extent. It is the only pillar that removes import dependence entirely for the food it covers, which is valuable given how quickly a single-source shock can hit. Its limitation is that land scarcity sets a hard ceiling on scale, so a qualified judgement treats it as a resilience booster rather than the dominant strategy.', level:2},
+  ];
+  const submissionCount = [2,1,2,2,0,1,2][idx];
+  const writerOrder = [1,3,2,0];
+  const writingSamples = [];
+  for(let w=0; w<submissionCount; w++){
+    const memberIdx = writerOrder[w%4];
+    const sample = w===0 ? WEAK[idx] : STRONG[idx];
+    writingSamples.push({studentId:members[memberIdx].id, studentName:members[memberIdx].name, text:sample.text, aiCoachLog:'', submittedAt: daysAgo(2,idx+w), teacherFeedback:'', lormsLevel:sample.level, graded:false});
+  }
+  return {
+    id:String(n), name:'Group '+n, members,
+    individualIdeas: members.map((m,i)=>({studentId:m.id, text: idx%3===0 && i===2 ? '' : 'Initial idea from '+m.name+': prioritise '+(i%2? 'water':'food')+' resilience first, since that felt like the bigger gap in the scenario brief.', submittedAt: daysAgo(7,idx)})),
+    plan:{versions, status: revised?'revised':'submitted'},
+    jigsaw:{assigned:true},
+    wall:{comments:[]},
+    commentsGiven:[],
+    commentsReceived: idx<2 ? [{from:'Group '+(idx===0?3:4), strength:'Clear reasoning behind the NEWater/desalination balance.', question:'What trade-off moves if the dry spell lasts an extra year?', at: daysAgo(4,idx)}] : [],
+    quickCheck:{score:quickCheckScore, total:4, attempted:true},
+    individualWriting: writingSamples,
+    reflections: idx<4 ? [{studentId:members[0].id, studentName:members[0].name, text:'We disagreed about how many tokens to put on desalination — talking it through changed my mind on the energy cost.', at:daysAgo(2,idx)}] : [],
+    participation:{allContributed: !(idx%3===0), silentMembers: idx%3===0 ? [members[2].name] : [], feedbackScores: feedbackQuality},
+  };
+}
+function daysAgo(d, jitterIdx){ const dt = new Date(); dt.setDate(dt.getDate()-d); dt.setHours(9+((jitterIdx||0)%6), 10*((jitterIdx||0)%5), 0,0); return dt.toISOString(); }
+
+function freshGroup1(){
+  const members = [
+    {id:'you', name:'You', roleL1:ROLES[0], roleL2:ROLES[1], roleL3:ROLES[2]},
+    {id:'g1_1', name:'Aarav', roleL1:ROLES[1], roleL2:ROLES[2], roleL3:ROLES[3]},
+    {id:'g1_2', name:'Beatrice', roleL1:ROLES[2], roleL2:ROLES[3], roleL3:ROLES[0]},
+    {id:'g1_3', name:'Chong Wei', roleL1:ROLES[3], roleL2:ROLES[0], roleL3:ROLES[1]},
+  ];
+  return {
+    id:'1', name:'Group 1', members,
+    individualIdeas:[
+      {studentId:'g1_1', text:'I think we should play it safe and spread tokens evenly — we don’t know yet which shock is worse.', submittedAt:null, seeded:true},
+      {studentId:'g1_2', text:'The chicken story worried me more than the reservoir one. I’d put more into food imports and stockpiling.', submittedAt:null, seeded:true},
+      {studentId:'g1_3', text:'Water first — Singapore can’t function at all without it, food shortages take longer to actually hurt us.', submittedAt:null, seeded:true},
+    ],
+    plan:{versions:[]},
+    jigsaw:{assigned:false, memberSet:{}},
+    wall:{comments:[]},
+    commentsGiven:[],
+    commentsReceived:[],
+    quickCheck:{score:null, total:4, attempted:false},
+    individualWriting:[],
+    reflections:[],
+    participation:{allContributed:false, silentMembers:[], feedbackScores:[]},
+  };
+}
+
+/* ---------------------------------------------------------------- *
+ * 2. STATE — load / save / init
+ * ---------------------------------------------------------------- */
+const STORE_KEY = 'supplyshock2040_v1';
+let state = null;
+
+function freshState(){
+  const groups = {'1': freshGroup1()};
+  for(let n=2;n<=8;n++) groups[String(n)] = makeSeedGroup(n, n-2);
+  return {
+    fontStep:0, theme:'system',
+    view:'start', // start | journey | dashboard
+    step:0,       // journey step index
+    tTab:'overview', // teacher tab
+    liveMemberId:'you',
+    aiCoachEnabled:true,
+    usabilityNotes:[
+      {by:'Pilot tester (S4-03)', note:'Took a moment to notice the token total updates live — added a short hint under the planner.', at:daysAgo(8,0)},
+      {by:'Pilot tester (S4-11)', note:'Comparison wall was clear once labelled icons were added for water vs food strategies.', at:daysAgo(8,1)},
+    ],
+    aiCoachLogsAll:[
+      {group:'Group 4', student:'Marcus T.', log:'Asked EdCafe whether my evidence was dated. It asked me to name the year of my source — I added the 2022 reference.', at:daysAgo(3,3)},
+    ],
+    teacherPrompts:[],
+    groups,
+  };
+}
+function loadState(){
+  try{
+    const raw = localStorage.getItem(STORE_KEY);
+    if(!raw) return freshState();
+    const parsed = JSON.parse(raw);
+    if(!parsed || !parsed.groups || !parsed.groups['1']) return freshState();
+    return parsed;
+  }catch(e){ return freshState(); }
+}
+function saveState(){
+  try{ localStorage.setItem(STORE_KEY, JSON.stringify(state)); }catch(e){ /* storage unavailable — continue without persistence */ }
+}
+function resetAll(){
+  try{ localStorage.removeItem(STORE_KEY); }catch(e){}
+  state = freshState();
+  applyA11y(); render();
+}
+
+/* ---------------------------------------------------------------- *
+ * 3. HELPERS
+ * ---------------------------------------------------------------- */
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function fmtDate(iso){ if(!iso) return '—'; const d = new Date(iso); return d.toLocaleDateString('en-SG',{day:'2-digit',month:'short'}) + ' · ' + d.toLocaleTimeString('en-SG',{hour:'2-digit',minute:'2-digit'}); }
+function g1(){ return state.groups['1']; }
+function latestPlan(group){ const v = group.plan.versions; return v.length? v[v.length-1] : null; }
+function firstPlan(group){ return group.plan.versions[0] || null; }
+function catById(id){ return TOKEN_CATS.find(c=>c.id===id); }
+function speak(text){
+  try{
+    if(!('speechSynthesis' in window)) return;
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.rate = 0.98;
+    window.speechSynthesis.speak(u);
+  }catch(e){}
+}
+function readAloudBtn(getText){
+  const id = 'ra'+Math.random().toString(36).slice(2,8);
+  setTimeout(()=>{ const b=document.getElementById(id); if(b) b.onclick=()=>speak(getText()); }, 0);
+  return '<button class="btn btn-sm btn-ghost" id="'+id+'" type="button">'+ic('speaker',15)+' Read this step aloud</button>';
+}
+function copyToClipboard(text, btnEl){
+  const done = ()=>{ const old=btnEl.textContent; btnEl.textContent='Copied'; setTimeout(()=>btnEl.textContent=old,1200); };
+  const fail = ()=>{
+    try{
+      const ta=document.createElement('textarea'); ta.value=text; ta.style.position='fixed'; ta.style.opacity='0';
+      document.body.appendChild(ta); ta.focus(); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); done();
+    }catch(e){ btnEl.textContent='Select & copy manually'; }
+  };
+  if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(text).then(done).catch(fail); } else fail();
+}
+
+/* ---------------------------------------------------------------- *
+ * 4. STEP DEFINITIONS
+ * ---------------------------------------------------------------- */
+const STEPS = [
+  {id:'welcome', lesson:'Before you begin', name:'Your group room', icon:'flag'},
+  {id:'scenario', lesson:'Lesson 1', name:'Scenario briefing', icon:'cloud'},
+  {id:'idea', lesson:'Lesson 1', name:'Your individual idea', icon:'sprout'},
+  {id:'planner', lesson:'Lesson 1', name:'Group resource plan', icon:'box'},
+  {id:'submit', lesson:'Lesson 1', name:'Submit your draft', icon:'chart'},
+  {id:'jigsaw', lesson:'Lesson 2', name:'Evidence jigsaw', icon:'globe'},
+  {id:'wall', lesson:'Lesson 2', name:'Comparison wall', icon:'handshake'},
+  {id:'consolidate', lesson:'Lesson 2', name:'Teacher consolidation', icon:'recycle'},
+  {id:'revise', lesson:'Lesson 2', name:'Revise your plan', icon:'wave'},
+  {id:'writing', lesson:'Lesson 3', name:'Individual response', icon:'pencil'},
+  {id:'reflect', lesson:'Lesson 3', name:'Reflection', icon:'star'},
+  {id:'done', lesson:'Complete', name:'Journey summary', icon:'trophy'},
+];
+const ZONE_ICON = {
+  'Before you begin':'flag', 'Lesson 1':'drop', 'Lesson 2':'basket',
+  'Lesson 3':'pencil', 'Complete':'trophy',
+};
+
+function stepUnlocked(i){
+  const g = g1();
+  if(i<=0) return true;
+  if(i===1) return true; // scenario always visible
+  if(i===2) return true; // idea
+  if(i===3) return true; // planner open throughout, locks after submit
+  if(i===4) return tokensTotal(currentDraftTokens())>0 || g.plan.versions.length>0;
+  if(i===5) return g.plan.versions.length>0; // jigsaw needs submission
+  if(i===6) return g.plan.versions.length>0;
+  if(i===7) return g.plan.versions.length>0;
+  if(i===8) return g.plan.versions.length>0;
+  if(i===9) return g.plan.versions.length>0; // writing can start after revise ideally, but not hard-gated
+  if(i===10) return g.individualWriting.some(w=>w.studentId==='you');
+  if(i===11) return g.reflections.some(r=>r.studentId==='you');
+  return true;
+}
+let draftTokens = null; // working buffer for the planner before a version is created
+function currentDraftTokens(){
+  if(draftTokens) return draftTokens;
+  const g=g1(); const last = latestPlan(g);
+  draftTokens = last ? {...last.tokens} : blankTokens();
+  return draftTokens;
+}
+
+/* ---------------------------------------------------------------- *
+ * 5. RENDER — top level
+ * ---------------------------------------------------------------- */
+function render(){
+  document.getElementById('btnViewStudent').setAttribute('aria-pressed', state.view!=='dashboard');
+  document.getElementById('btnViewTeacher').setAttribute('aria-pressed', state.view==='dashboard');
+  const main = document.getElementById('main');
+  if(state.view==='start') main.innerHTML = renderStart();
+  else if(state.view==='dashboard') main.innerHTML = renderDashboard();
+  else main.innerHTML = renderJourney();
+  main.classList.remove('fade-in'); void main.offsetWidth; main.classList.add('fade-in');
+  renderXpBar();
+  wireEvents();
+}
+
+function applyA11y(){
+  document.documentElement.style.setProperty('--fs', (16 + (state.fontStep||0)*2) + 'px');
+  if(state.theme==='dark') document.documentElement.setAttribute('data-theme','dark');
+  else if(state.theme==='light') document.documentElement.setAttribute('data-theme','light');
+  else document.documentElement.removeAttribute('data-theme');
+  if(typeof updateSoundBtn==='function') updateSoundBtn();
+}
+
+/* ---- START SCREEN ---- */
+function renderStart(){
+  return `
+  <div class="hero-band">
+    <div class="hero-copy">
+      <div class="eyebrow" style="color:#BFE4E9">Secondary 4 Express · Geography · Cluster 5</div>
+      <h1>Singapore 2040: Dry Spell &amp; Supply Shock</h1>
+      <p style="max-width:62ch">You and seven other groups of policy advisers have three lessons to build, defend and revise a 20-year water–food resilience plan — then answer, individually, how far one strategy can really carry Singapore.</p>
+    </div>
+    <div class="hero-art">${skylineArt({tone:'light'})}</div>
+  </div>
+  <div class="card">
+    <h3>Join Group 1</h3>
+    <p class="muted">This browser plays Group 1 live. The other seven groups are pre-filled with sample class data so the comparison wall and teacher dashboard have something to show you.</p>
+    <button class="btn btn-primary btn-water" id="enterJourney" type="button">Enter the group room →</button>
+  </div>
+  <div class="card-flat">
+    <h4>Or look at the teacher dashboard</h4>
+    <p class="muted" style="margin-bottom:.8em">See participation, peer-feedback quality, revisions and the individual-writing review queue across all eight groups.</p>
+    <button class="btn" id="enterDash" type="button">Open teacher dashboard →</button>
+  </div>`;
+}
+
+/* ---- JOURNEY (Group 1) ---- */
+const LESSON_ACCENT = {
+  'Before you begin':'neutral', 'Lesson 1':'water', 'Lesson 2':'food',
+  'Lesson 3':'plum', 'Complete':'good',
+};
+
+function renderRail(){
+  // Group consecutive STEPS entries that share the same lesson, so each
+  // lesson reads as one labelled, color-coded "zone" — a game-style path
+  // of icon nodes connected by a dotted trail, rather than a flat list.
+  const groups = [];
+  STEPS.forEach((s,i)=>{
+    const open = groups[groups.length-1];
+    if(open && open.lesson===s.lesson) open.indices.push(i);
+    else groups.push({lesson:s.lesson, indices:[i]});
+  });
+  return groups.map(grp=>{
+    const accent = LESSON_ACCENT[grp.lesson] || 'neutral';
+    const items = grp.indices.map(i=>{
+      const s = STEPS[i];
+      const unlocked = stepUnlocked(i);
+      const isDone = i<state.step && unlocked;
+      const nodeIcon = unlocked ? ic(s.icon,16) : ic('lock',14);
+      return `<button class="rail-step ${isDone?'done':''}" data-step="${i}" ${i===state.step?'aria-current="step"':''} ${unlocked?'':'disabled'}>
+        <span class="dot">${nodeIcon}${isDone?`<span class="star">${ic('star',10)}</span>`:''}</span>
+        <span class="lbl"><span class="name">${esc(s.name)}</span></span>
+      </button>`;
+    }).join('');
+    return `<div class="rail-group" data-accent="${accent}">
+      <div class="rail-group-label"><span class="zone-badge">${ic(ZONE_ICON[grp.lesson]||'flag',14)}</span>${esc(grp.lesson)}</div>
+      <div class="rail-group-items">${items}</div>
+    </div>`;
+  }).join('');
+}
+
+const LEVEL_TITLE = {
+  'Before you begin':'New Recruit', 'Lesson 1':'Trainee Adviser', 'Lesson 2':'Policy Adviser',
+  'Lesson 3':'Senior Adviser', 'Complete':'Chief Policy Adviser',
+};
+const ACCENT_VAR = {water:'var(--water)', food:'var(--food)', plum:'var(--plum)', good:'var(--good)', neutral:'var(--ink-dim)'};
+function renderXpBar(){
+  const bar = document.getElementById('xpbar');
+  if(!bar) return;
+  if(state.view!=='journey'){ bar.hidden = true; return; }
+  bar.hidden = false;
+  const lesson = STEPS[state.step].lesson;
+  const accent = ACCENT_VAR[LESSON_ACCENT[lesson]||'neutral'];
+  const pct = Math.round((state.step/(STEPS.length-1))*100);
+  const badgeCount = (state.earnedBadges||[]).length;
+  bar.innerHTML = `
+    <span class="xp-title" style="color:${accent}">${ic(ZONE_ICON[lesson]||'flag',14)} ${esc(LEVEL_TITLE[lesson]||'')}</span>
+    <span class="xp-track"><span class="xp-fill" style="width:${pct}%; background:${accent}"></span></span>
+    <span class="xp-badge-count">${ic('star',13)} ${badgeCount}/${BADGES.length}</span>
+  `;
+}
+
+function renderJourney(){
+  const g = g1();
+  const step = STEPS[state.step];
+  return `
+  <div class="shell">
+    <nav class="rail" aria-label="Journey phases">${renderRail()}</nav>
+    <div class="main">
+      ${renderStepBody(step.id, g)}
+    </div>
+  </div>`;
+}
+
+function roleLine(g){
+  const you = g.members.find(m=>m.id==='you');
+  return `Lesson 1: <b>${you.roleL1}</b> &nbsp;•&nbsp; Lesson 2: <b>${you.roleL2}</b> &nbsp;•&nbsp; Lesson 3: <b>${you.roleL3}</b>`;
+}
+
+function renderStepBody(id, g){
+  if(id==='welcome') return stepWelcome(g);
+  if(id==='scenario') return stepScenario(g);
+  if(id==='idea') return stepIdea(g);
+  if(id==='planner') return stepPlanner(g);
+  if(id==='submit') return stepSubmit(g);
+  if(id==='jigsaw') return stepJigsaw(g);
+  if(id==='wall') return stepWall(g);
+  if(id==='consolidate') return stepConsolidate(g);
+  if(id==='revise') return stepRevise(g);
+  if(id==='writing') return stepWriting(g);
+  if(id==='reflect') return stepReflect(g);
+  if(id==='done') return stepDone(g);
+  return '';
+}
+
+function navButtons(prev, next, nextDisabled, nextLabel){
+  return `<div class="btn-row">
+    ${prev!=null?`<button class="btn" data-goto="${prev}" type="button">← Back</button>`:''}
+    ${next!=null?`<button class="btn btn-primary" data-goto="${next}" type="button" ${nextDisabled?'disabled':''}>${nextLabel||'Continue →'}</button>`:''}
+  </div>`;
+}
+
+function stepWelcome(g){
+  return `
+  <div class="card">
+    <div class="eyebrow">Before you begin</div>
+    <h2>Welcome to Group 1</h2>
+    <p>You are one of four policy advisers. Roles rotate each lesson so no one owns the plan alone — everyone still contributes evidence, questions a peer, and helps improve the final judgement.</p>
+    <table style="margin:1em 0"><thead><tr><th>Member</th><th>Lesson 1</th><th>Lesson 2</th><th>Lesson 3</th></tr></thead><tbody>
+    ${g.members.map(m=>`<tr><td>${esc(m.name)}${m.id==='you'?' <span class="badge badge-water">You</span>':''}</td><td>${m.roleL1}</td><td>${m.roleL2}</td><td>${m.roleL3}</td></tr>`).join('')}
+    </tbody></table>
+    <p class="muted">Closed group, teacher-moderated. First attempts are never publicly ranked — the point of Lesson 1 is to surface your honest starting assumptions, not to be right yet.</p>
+    ${readAloudBtn(()=>'Welcome to Group 1. You are one of four policy advisers. Roles rotate each lesson.')}
+  </div>
+  <div class="card-flat">
+    <h4 style="margin-top:0">Operational roles</h4>
+    <div class="hotspot-grid">
+      ${ROLES.map(r=>`<div class="card-flat" style="margin-bottom:0"><strong>${esc(r)}</strong><p class="muted" style="margin:.3em 0 0; font-size:.86rem">${esc(ROLE_BLURBS[r])}</p></div>`).join('')}
+    </div>
+  </div>
+  ${navButtons(null,1)}`;
+}
+
+function stepScenario(g){
+  return `
+  <div class="scenario-banner" aria-hidden="true">${skylineArt({tone:'light'})}</div>
+  <div class="card">
+    <div class="eyebrow">Lesson 1 · Scenario</div>
+    <h2>Singapore 2040: Dry Spell and Supply Shock</h2>
+    <p>Your group has been called in as policy advisers. A longer, drier dry season has strained the region's water supply, and a separate shock has just disrupted one of Singapore's food import lines. You have three lessons to propose, defend and revise a 20-year resilience plan across water and food.</p>
+    ${readAloudBtn(()=>'Singapore 2040. Your group has been called in as policy advisers. A longer, drier dry season has strained the region\'s water supply, and a separate shock has disrupted one of Singapore\'s food import lines.')}
+  </div>
+  <h3 style="margin-top:0">Two precedents to read first</h3>
+  ${PRECEDENTS.map(p=>`
+    <div class="card-flat">
+      <span class="badge ${p.tag==='water'?'badge-water':'badge-food'}">${ic(p.tag==='water'?'drop':'basket',13)} ${p.tag==='water'?'Water':'Food'}</span>
+      <h4 style="margin-top:.5em">${esc(p.title)}</h4>
+      <p style="margin-bottom:0">${p.body}</p>
+    </div>`).join('')}
+  <div class="card-flat"><p style="margin-bottom:0"><strong>Note the difference:</strong> the reservoir stress is a climate-linked precedent; the chicken export restriction is a trade decision, not a climate event. Keep that distinction in mind as you justify your plan.</p></div>
+  ${navButtons(0,2)}`;
+}
+
+function stepIdea(g){
+  const mine = g.individualIdeas.find(i=>i.studentId==='you');
+  const others = g.individualIdeas.filter(i=>i.studentId!=='you');
+  return `
+  <div class="card">
+    <div class="eyebrow">Lesson 1 · Silent individual idea</div>
+    <h2>What's your first instinct?</h2>
+    <p>Before any group discussion, post your own honest first idea — which should Singapore prioritise, water or food, and why? This is ungraded diagnostic evidence: there's no wrong answer at this stage.</p>
+    <label for="ideaInput">Your idea (2–3 sentences)</label>
+    <textarea id="ideaInput" placeholder="e.g. I'd prioritise... because...">${esc(mine?mine.text:'')}</textarea>
+    <div class="btn-row" style="margin-top:.8em">
+      <button class="btn btn-primary" id="saveIdea" type="button">Post my idea</button>
+      ${mine && mine.submittedAt ? `<span class="badge badge-good">Posted ${fmtDate(mine.submittedAt)}</span>` : ''}
+    </div>
+  </div>
+  <div class="card-flat">
+    <h4>Your groupmates' silent posts</h4>
+    ${others.map(o=>`<div class="comment"><div class="meta">${esc(g.members.find(m=>m.id===o.studentId).name)}</div>${esc(o.text)}</div>`).join('')}
+  </div>
+  ${navButtons(1,3)}`;
+}
+
+function stepPlanner(g){
+  const t = currentDraftTokens();
+  const total = tokensTotal(t);
+  const over = total>100;
+  const locked = g.plan.versions.length>0 && !state.revising;
+  return `
+  <div class="card">
+    <div class="eyebrow">Lesson 1 · Group resource plan</div>
+    <h2>Allocate 100 Resource Units (RU)</h2>
+    <p>RU is a teaching device, not a real budget. Spread 100 RU across the Four National Taps and the Singapore Food Story 2 pillars to show where your group would invest over the next 20 years.</p>
+    ${locked?`<div class="badge badge-neutral" style="margin-bottom:.8em">Draft submitted — open "Revise your plan" in Lesson 2 to change it</div>`:''}
+    <div class="token-grid">
+      ${TOKEN_CATS.map(c=>`
+        <div class="token-row ${c.cat}">
+          <span class="ico" aria-hidden="true">${ic(c.icon,20)}</span>
+          <span class="tr-label"><span class="t-name">${esc(c.name)}</span><span class="t-sub">${esc(c.sub)}</span></span>
+          <input type="number" min="0" max="100" inputmode="numeric" data-tok="${c.id}" value="${t[c.id]||0}" aria-label="${esc(c.name)} tokens" ${locked?'disabled':''}>
+        </div>`).join('')}
+    </div>
+    <div class="token-total ${over?'over':'ok'}">
+      <span>Total allocated</span>
+      <span class="big" id="tokenTotalDisplay">${total} / 100</span>
+    </div>
+    ${over?'<p style="color:var(--warn); margin-top:.5em"><strong>Over budget</strong> — bring your total to 100 or below before submitting.</p>':''}
+    <hr class="divider">
+    <label for="riskInput">What's the single biggest risk in this allocation?</label>
+    <textarea id="riskInput" placeholder="e.g. If the dry spell runs long...">${esc((latestPlan(g)&&!state.revising)?latestPlan(g).risk:(state.draftRisk||''))}</textarea>
+    <label for="justInput" style="margin-top:.6em; display:block">Justify your priorities in 1–2 sentences</label>
+    <textarea id="justInput" placeholder="We prioritised...">${esc((latestPlan(g)&&!state.revising)?latestPlan(g).justification:(state.draftJust||''))}</textarea>
+  </div>
+  <div class="card-flat"><p style="margin-bottom:0"><strong>Teacher prompts to consider:</strong> What does this token mean? Who in your group hasn't contributed yet? What evidence tests your assumption?</p></div>
+  ${navButtons(2,4,false,locked?'Continue →':'Continue to submission →')}`;
+}
+
+function stepSubmit(g){
+  const plan = latestPlan(g);
+  const t = currentDraftTokens();
+  const total = tokensTotal(t);
+  if(!plan){
+    return `
+    <div class="card">
+      <div class="eyebrow">Lesson 1 · Submit your draft</div>
+      <h2>Ready to lock in version 1?</h2>
+      <p>Your current total is <strong class="mono">${total} / 100</strong>. Submitting timestamps this as your group's first-pass draft — it stays visible as a record even after you revise.</p>
+      <div class="btn-row">
+        <button class="btn btn-primary btn-water" id="submitDraft" type="button" ${total===0||total>100?'disabled':''}>Submit timestamped draft</button>
+      </div>
+      ${total===0?'<p class="muted" style="margin-top:.6em">Allocate at least some tokens on the planner step first.</p>':''}
+    </div>
+    ${navButtons(3,null)}`;
+  }
+  const consequences = evaluateConsequences(plan.tokens);
+  return `
+  <div class="card">
+    <div class="eyebrow">Lesson 1 · Submitted</div>
+    <h2>Draft received</h2>
+    <p class="mono">Submitted ${fmtDate(plan.timestamp)} by ${esc(plan.submittedBy)}</p>
+    <p class="muted">The confirmation below releases Lesson 2 resources. It isn't a secure lock — anyone in your group can still see and discuss it before the next lesson.</p>
+    <div class="badge badge-good">Version ${plan.version} recorded</div>
+  </div>
+  <div class="card" style="border-color:var(--water)">
+    <div class="eyebrow"><span class="icon-inline">${ic('signal',15)} Consequence transmission</span></div>
+    <h3>Year 2040: the shock hits</h3>
+    <p class="muted" style="margin-top:-.3em">This reads your allocation and narrates what it would mean under the scenario — it's feedback for your revision, not a score. There is no single correct allocation.</p>
+    ${consequences.map(c=>`<div class="hotspot ${c.sev==='danger'?'food':(c.sev==='ok'?'':'water')}" style="${c.sev==='danger'?'border-color:var(--warn); background:var(--warn-soft)':''}">
+      <strong style="${c.sev==='danger'?'color:var(--warn)':''}">${c.sev==='danger'?'CRITICAL':(c.sev==='warning'?'WATCH':'HOLDING')}</strong> — ${esc(c.text)}
+    </div>`).join('')}
+  </div>
+  ${navButtons(3,5)}`;
+}
+
+function stepJigsaw(g){
+  const assigned = g.jigsaw.memberSet && g.jigsaw.memberSet.you;
+  return `
+  <div class="card">
+    <div class="eyebrow">Lesson 2 · Evidence jigsaw</div>
+    <h2>Become the expert on one evidence set</h2>
+    <p>Each member investigates one evidence set, then explains it to the rest of the group. Choose which set you'll own and read it closely — you'll be the one teaching it.</p>
+    <div class="btn-row" style="margin-bottom:1em">
+      <button class="btn ${assigned==='water'?'btn-water':''}" data-jig="water" type="button">${ic('drop',18)} Water evidence set</button>
+      <button class="btn ${assigned==='food'?'btn-food':''}" data-jig="food" type="button">${ic('sprout',18)} Food evidence set</button>
+    </div>
+    ${assigned ? EVIDENCE_SETS[assigned].map(e=>`
+      <div class="evidence-card"><strong>${esc(e.title)}</strong><p style="margin:.4em 0 0">${e.body}</p><span class="src">${esc(e.src)}</span></div>
+    `).join('') : '<p class="muted">Pick a set above to see its evidence cards.</p>'}
+    ${assigned?`
+    <label for="jigNotes" style="margin-top:.8em; display:block">Notes for explaining this to your group</label>
+    <textarea id="jigNotes" placeholder="The key point I'll explain is...">${esc(g.jigsaw.notes||'')}</textarea>
+    <div class="btn-row"><button class="btn btn-sm" id="saveJigNotes" type="button">Save notes</button></div>`:''}
+  </div>
+  ${navButtons(4,6)}`;
+}
+
+function wallGroups(){
+  const ids = Object.keys(state.groups);
+  return ids.map(id=>state.groups[id]).filter(gr=>latestPlan(gr));
+}
+function planBars(plan){
+  const max = Math.max(...TOKEN_CATS.map(c=>plan.tokens[c.id]||0), 1);
+  return TOKEN_CATS.map(c=>`
+    <div class="bar-row">
+      <span class="lab" title="${esc(c.name)}">${ic(c.icon,14)} ${esc(c.name.split(' ')[0])}</span>
+      <span class="bar-track"><span class="bar-fill ${c.cat}" style="width:${Math.round(((plan.tokens[c.id]||0)/100)*100)}%"></span></span>
+      <span class="val mono">${plan.tokens[c.id]||0}</span>
+    </div>`).join('');
+}
+
+function stepWall(g){
+  const mine = latestPlan(g);
+  const groups = wallGroups();
+  const quizState = state.quiz || {answered:{}, score:0};
+  return `
+  <div class="card">
+    <div class="eyebrow">Lesson 2 · Comparison wall</div>
+    <h2>Gallery walk</h2>
+    <p>Here's your plan beside three classmates' plans. Comment on two other groups: name one evidence-supported strength and ask one probing question.</p>
+  </div>
+  <div class="wall-grid">
+    ${mine?`<div class="plan-card mine"><h4>${esc(g.name)} <span class="badge badge-water">Yours</span></h4><div class="bar-chart">${planBars(mine)}</div><p class="muted" style="margin:.5em 0 0">${esc(mine.risk)}</p></div>`:''}
+    ${groups.filter(gr=>gr.id!=='1').slice(0,3).map(gr=>{
+      const p = latestPlan(gr);
+      return `<div class="plan-card" data-wallgroup="${gr.id}"><h4>${esc(gr.name)}</h4><div class="bar-chart">${planBars(p)}</div><p class="muted" style="margin:.5em 0 0">${esc(p.risk)}</p>
+        <button class="btn btn-sm" data-comment-on="${gr.id}" type="button">Comment on this plan</button>
+      </div>`;
+    }).join('')}
+  </div>
+  <div class="card">
+    <h3>Comments you've given</h3>
+    ${g.commentsGiven.length? g.commentsGiven.map(c=>`<div class="comment"><div class="meta">To ${esc(c.toGroupName)} · ${fmtDate(c.at)}</div><strong>Strength:</strong> ${esc(c.strength)}<br><strong>Question:</strong> ${esc(c.question)}</div>`).join('') : '<p class="muted">None yet — use the buttons above.</p>'}
+    <h3 style="margin-top:1.1em">Comments you've received</h3>
+    ${g.commentsReceived.length? g.commentsReceived.map(c=>`<div class="comment q"><div class="meta">From ${esc(c.from)} · ${fmtDate(c.at)}</div><strong>Strength:</strong> ${esc(c.strength)}<br><strong>Question:</strong> ${esc(c.question)}</div>`).join('') : '<p class="muted">None yet.</p>'}
+  </div>
+  <div class="card" id="quickCheckCard">
+    <div class="eyebrow food">Quick check</div>
+    <h3>Four Taps &amp; Food Story 2</h3>
+    ${QUICK_CHECK.map((qc,qi)=>`
+      <div class="card-flat">
+        <p style="margin-bottom:.6em"><strong>${qi+1}.</strong> ${esc(qc.q)}</p>
+        ${qc.opts.map((o,oi)=>`<button class="quiz-opt" data-qc="${qi}" data-oi="${oi}" type="button">${esc(o)}</button>`).join('')}
+        <p class="muted quiz-why" data-why="${qi}" hidden style="margin-top:.4em">${esc(qc.why)}</p>
+      </div>`).join('')}
+    <p id="quizScoreLine" class="mono muted"></p>
+  </div>
+  ${navButtons(5,7)}`;
+}
+
+function stepConsolidate(g){
+  return `
+  <div class="card">
+    <div class="eyebrow">Lesson 2 · Teacher consolidation</div>
+    <h2>Four National Taps &amp; Singapore Food Story 2</h2>
+    <p>${CONSOLIDATION.principle}</p>
+    ${readAloudBtn(()=>CONSOLIDATION.principle)}
+  </div>
+  <h3>Water — Four National Taps</h3>
+  <div class="hotspot-grid">
+  ${CONSOLIDATION.taps.map(t=>`<div class="hotspot water"><strong class="icon-inline">${ic('drop',17)} ${esc(t.name)}</strong><p style="margin:.3em 0 0">${t.note}</p></div>`).join('')}
+  </div>
+  <h3 style="margin-top:1.2em">Food — Singapore Food Story 2 pillars</h3>
+  <div class="hotspot-grid">
+  ${CONSOLIDATION.foodStory.map(t=>`<div class="hotspot food"><strong class="icon-inline">${ic('sprout',17)} ${esc(t.name)}</strong><p style="margin:.3em 0 0">${t.note}</p></div>`).join('')}
+  </div>
+  <div class="card-flat" style="margin-top:1em"><p style="margin-bottom:0"><em>Historical note:</em> an earlier approach described three food “baskets.” Food Story 2 regroups the same thinking into the four pillars above (Lim, 2021; SFA, n.d.-a).</p></div>
+  ${navButtons(6,8)}`;
+}
+
+function stepRevise(g){
+  const v1 = firstPlan(g);
+  if(!v1) return `<div class="card"><p>Submit your Lesson 1 draft first.</p></div>${navButtons(7,null)}`;
+  const t = currentDraftTokens();
+  const total = tokensTotal(t);
+  const over = total>100;
+  const latest = latestPlan(g);
+  const alreadyRevised = g.plan.versions.length>1;
+  return `
+  <div class="card">
+    <div class="eyebrow">Lesson 2 · Revise your plan</div>
+    <h2>Version ${alreadyRevised?latest.version:2}</h2>
+    <p class="muted">Your original (version 1) stays on record below. Adjust your tokens in light of the consolidation and comments you received, and explain what changed and why.</p>
+    <div class="card-flat"><strong>Version 1, ${fmtDate(v1.timestamp)}</strong><div class="bar-chart">${planBars(v1)}</div></div>
+    <div class="token-grid">
+      ${TOKEN_CATS.map(c=>`
+        <div class="token-row ${c.cat}">
+          <span class="ico" aria-hidden="true">${ic(c.icon,20)}</span>
+          <span class="tr-label"><span class="t-name">${esc(c.name)}</span></span>
+          <input type="number" min="0" max="100" inputmode="numeric" data-tok="${c.id}" value="${t[c.id]||0}" aria-label="Revised ${esc(c.name)} tokens">
+        </div>`).join('')}
+    </div>
+    <div class="token-total ${over?'over':'ok'}"><span>Total</span><span class="big">${total} / 100</span></div>
+    <label for="reviseReason" style="margin-top:.8em; display:block">What changed, and why?</label>
+    <textarea id="reviseReason" placeholder="After consolidation / peer comments, we...">${esc(state.reviseReason||'')}</textarea>
+    <div class="btn-row">
+      <button class="btn btn-primary btn-water" id="submitRevision" type="button" ${over||total===0?'disabled':''}>Submit revision</button>
+    </div>
+  </div>
+  ${navButtons(7,9)}`;
+}
+
+function stepWriting(g){
+  const mine = g.individualWriting.find(w=>w.studentId==='you');
+  const showFrame = state.showFrame!==false;
+  return `
+  <div class="card">
+    <div class="eyebrow">Lesson 3 · Individual transfer</div>
+    <h2>Your written response</h2>
+    <p style="font-style:italic">${esc(WRITING_PROMPT)}</p>
+    <p class="muted">Independent writing — your own evidence, your own judgement. Initial plans were ungraded diagnostic work; this is assessed.</p>
+  </div>
+  <div class="card-flat">
+    <label class="toggle"><input type="checkbox" id="frameToggle" ${showFrame?'checked':''}> Show claim–evidence–limitation–judgement frame (optional)</label>
+    ${showFrame?`
+    <div style="margin-top:.8em">
+      <span class="frame-pill">Claim</span> ${esc(CELJ_PROMPTS.claim)}<br>
+      <span class="frame-pill" style="margin-top:.4em">Evidence</span> ${esc(CELJ_PROMPTS.evidence)}<br>
+      <span class="frame-pill" style="margin-top:.4em">Limitation</span> ${esc(CELJ_PROMPTS.limitation)}<br>
+      <span class="frame-pill" style="margin-top:.4em">Judgement</span> ${esc(CELJ_PROMPTS.judgement)}
+    </div>`:''}
+  </div>
+  <div class="card">
+    <label for="writingInput">Your response</label>
+    <div class="pill-row" style="margin:.4em 0 .6em">
+      <span class="muted" style="font-size:.78rem; align-self:center">Structure helpers:</span>
+      <button class="btn btn-sm" type="button" data-celj="claim">+ Claim</button>
+      <button class="btn btn-sm" type="button" data-celj="evidence">+ Evidence</button>
+      <button class="btn btn-sm" type="button" data-celj="limitation">+ Limitation</button>
+      <button class="btn btn-sm btn-food" type="button" data-celj="judgement">+ Judgement</button>
+    </div>
+    <textarea id="writingInput" style="min-height:10em" placeholder="To what extent...">${esc(mine?mine.text:(state.writingDraft||''))}</textarea>
+    <div class="btn-row"><button class="btn btn-primary" id="saveWriting" type="button">${mine?'Update my response':'Submit my response'}</button></div>
+  </div>
+  <div class="card ${state.aiCoachEnabled===false?'aicoach-off':''}">
+    <div class="eyebrow food">School-approved AI coach</div>
+    <h3>Ask EdCafe, not for answers</h3>
+    ${state.aiCoachEnabled===false?`
+      <p><strong>Your teacher has paused the AI coach.</strong> Ask a peer or your teacher the same questions instead: is my evidence dated? What's my limitation? What's my judgement?</p>
+    `:`
+      <p>EdCafe only sees an anonymised version of your draft and the LORMS descriptors below. It will ask about your claim, evidence, limitations and judgement — it won't write your answer, invent a citation, or grade you. Check every suggestion against your own sources.</p>
+      <a class="btn btn-food" href="${EDCAFE_URL}" target="_blank" rel="noopener">Open EdCafe coach ↗</a>
+      <label for="aiLog" style="margin-top:.9em; display:block">Log what you asked and what it asked back</label>
+      <textarea id="aiLog" placeholder="I asked EdCafe whether...">${esc((mine&&mine.aiCoachLog)||state.aiLogDraft||'')}</textarea>
+      <div class="btn-row"><button class="btn btn-sm" id="saveAiLog" type="button">Save to my record</button></div>
+    `}
+  </div>
+  <div class="card-flat">
+    <h4>LORMS descriptors (what your teacher is looking for)</h4>
+    <table><tbody>${LORMS.map(l=>`<tr><td><strong>${l.level}</strong><br><span class="muted">${l.band}</span></td><td>${l.desc}</td></tr>`).join('')}</tbody></table>
+  </div>
+  ${navButtons(8,10, !mine)}`;
+}
+
+function stepReflect(g){
+  const mine = g.reflections.find(r=>r.studentId==='you');
+  return `
+  <div class="card">
+    <div class="eyebrow">Lesson 3 · Reflection</div>
+    <h2>What changed in your thinking?</h2>
+    <p class="muted">A short, honest reflection — there's no right answer here either.</p>
+    <label for="reflectInput">What shifted between your silent idea in Lesson 1 and your answer now? Did you feel safe disagreeing with your group?</label>
+    <textarea id="reflectInput" placeholder="At first I thought... now I think...">${esc(mine?mine.text:(state.reflectDraft||''))}</textarea>
+    <div class="btn-row"><button class="btn btn-primary" id="saveReflect" type="button">${mine?'Update reflection':'Submit reflection'}</button></div>
+  </div>
+  <div class="journey-map">scenario → individual idea → group plan → submission → jigsaw → comparison → revision → individual writing → <b>reflection</b></div>
+  ${navButtons(9,11, !mine)}`;
+}
+
+function stepDone(g){
+  const plan = latestPlan(g);
+  const earned = earnedBadgeIds(g);
+  return `
+  <div class="scenario-banner" aria-hidden="true" style="background:linear-gradient(155deg, #241506, #03050c 65%); border-color:var(--food); box-shadow:0 0 22px rgba(255,157,46,.3)">
+    <svg viewBox="0 0 320 140" preserveAspectRatio="xMidYMid meet" style="width:100%;height:100%;display:block">
+      <circle cx="160" cy="70" r="40" fill="rgba(255,157,46,.12)"/>
+      <g transform="translate(135,42)" color="var(--food)">${ic('trophy',52)}</g>
+    </svg>
+  </div>
+  <div class="card">
+    <div class="eyebrow">Complete</div>
+    <h2>Nice work, Group 1</h2>
+    <p>Here's a summary of what you produced across the three lessons.</p>
+    <table><tbody>
+      <tr><td>Plan versions</td><td>${g.plan.versions.length}</td></tr>
+      <tr><td>Latest total allocated</td><td class="mono">${plan?tokensTotal(plan.tokens):0} / 100</td></tr>
+      <tr><td>Comments given</td><td>${g.commentsGiven.length}</td></tr>
+      <tr><td>Comments received</td><td>${g.commentsReceived.length}</td></tr>
+      <tr><td>Quick check</td><td>${g.quickCheck.attempted? g.quickCheck.score+' / '+g.quickCheck.total : 'Not attempted'}</td></tr>
+      <tr><td>Individual response</td><td>${g.individualWriting.some(w=>w.studentId==='you')?'Submitted':'Not yet'}</td></tr>
+      <tr><td>Reflection</td><td>${g.reflections.some(r=>r.studentId==='you')?'Submitted':'Not yet'}</td></tr>
+    </tbody></table>
+  </div>
+  <div class="card">
+    <h3>Achievements — ${earned.length} / ${BADGES.length}</h3>
+    <p class="muted" style="margin-top:-.4em">A motivational record only — your grade comes from the LORMS marking, not from these.</p>
+    <div class="badge-shelf">
+      ${BADGES.map(b=>{
+        const got = earned.includes(b.id);
+        return `<div class="achv ${got?'earned':''}">
+          <span class="achv-ico">${ic(got?b.icon:'lock',22)}</span>
+          <span class="achv-name">${esc(b.name)}</span>
+          <span class="achv-desc">${esc(b.desc)}</span>
+        </div>`;
+      }).join('')}
+    </div>
+  </div>
+  ${navButtons(10,null)}
+  <div class="btn-row"><button class="btn" id="goDashFromDone" type="button">View the teacher dashboard →</button></div>`;
+}
+
+/* ---------------------------------------------------------------- *
+ * 6. TEACHER DASHBOARD
+ * ---------------------------------------------------------------- */
+const T_TABS = [
+  {id:'overview', name:'Overview'},
+  {id:'groups', name:'Groups'},
+  {id:'writing', name:'Individual writing'},
+  {id:'aicoach', name:'AI coach'},
+  {id:'usability', name:'Usability & pilot'},
+  {id:'settings', name:'Settings'},
+];
+
+function renderDashboard(){
+  const tabs = T_TABS.map(t=>`<button role="tab" aria-selected="${state.tTab===t.id}" data-ttab="${t.id}" type="button">${t.name}</button>`).join('');
+  return `
+  <h1>Teacher dashboard</h1>
+  <p class="muted">Pilot view across all eight groups — Group 1 reflects this browser's live session; the rest are sample class data.</p>
+  <div class="tabbar" role="tablist">${tabs}</div>
+  <div id="tpanel">${renderTeacherTab(state.tTab)}</div>`;
+}
+
+function allGroups(){ return Object.values(state.groups); }
+
+function renderTeacherTab(tab){
+  if(tab==='overview') return tabOverview();
+  if(tab==='groups') return tabGroups();
+  if(tab==='writing') return tabWriting();
+  if(tab==='aicoach') return tabAiCoach();
+  if(tab==='usability') return tabUsability();
+  if(tab==='settings') return tabSettings();
+  return '';
+}
+
+function tabOverview(){
+  const groups = allGroups();
+  const submitted = groups.filter(g=>g.plan.versions.length>0).length;
+  const revised = groups.filter(g=>g.plan.versions.length>1).length;
+  const notStarted = groups.length - submitted;
+  const submittedOnly = submitted - revised;
+  const allScores = groups.flatMap(g=>Array.isArray(g.participation.feedbackScores)?g.participation.feedbackScores:[]);
+  const avgFb = allScores.length? (allScores.reduce((a,b)=>a+b,0)/allScores.length).toFixed(1) : '—';
+  const silentTotal = groups.reduce((s,g)=>s+(g.participation.silentMembers||[]).length,0);
+  const qcAvg = (()=>{ const a=groups.filter(g=>g.quickCheck.attempted); if(!a.length) return '—'; return (a.reduce((s,g)=>s+g.quickCheck.score,0)/a.length).toFixed(1)+' / 4'; })();
+  const qcAvgFrac = (()=>{ const a=groups.filter(g=>g.quickCheck.attempted); if(!a.length) return 0; return a.reduce((s,g)=>s+g.quickCheck.score,0)/a.length/4; })();
+  const writingCount = groups.reduce((s,g)=>s+g.individualWriting.length,0);
+
+  return `
+  <div class="card">
+    <h3 style="margin-bottom:.9em">Class progress at a glance</h3>
+    <div class="donut-row">
+      <div class="donut-item">
+        ${donutChart([
+          {value:revised, color:'var(--good)'},
+          {value:submittedOnly, color:'var(--water)'},
+          {value:notStarted, color:'var(--line)'},
+        ], {center:groups.length-notStarted+'/'+groups.length, centerSub:'drafted', label:'Groups by stage'})}
+        <div class="donut-legend">
+          <span><i style="background:var(--good)"></i>Revised (${revised})</span>
+          <span><i style="background:var(--water)"></i>Submitted only (${submittedOnly})</span>
+          <span><i style="background:var(--line)"></i>Not started (${notStarted})</span>
+        </div>
+      </div>
+      <div class="donut-item">
+        ${donutChart([
+          {value:qcAvgFrac*100, color:'var(--food)'},
+          {value:100-qcAvgFrac*100, color:'var(--line)'},
+        ], {center:qcAvg, centerSub:'quick check', label:'Average quick-check score'})}
+        <div class="donut-legend"><span><i style="background:var(--food)"></i>Class average, out of 4</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="stat-grid">
+    <div class="stat-tile"><span class="n mono">${submitted} / 8</span><span class="l">Groups with a submitted draft</span></div>
+    <div class="stat-tile"><span class="n mono">${revised} / 8</span><span class="l">Groups who have revised</span></div>
+    <div class="stat-tile"><span class="n mono">${avgFb}</span><span class="l">Avg. peer-feedback quality (0–2)</span></div>
+    <div class="stat-tile"><span class="n mono">${silentTotal}</span><span class="l">Silent members flagged (observation)</span></div>
+    <div class="stat-tile"><span class="n mono">${writingCount}</span><span class="l">Individual responses submitted</span></div>
+  </div>
+  <div class="card">
+    <h3>Participation by group</h3>
+    <div class="tbl-wrap"><table><thead><tr><th>Group</th><th>All contributed?</th><th>Silent members</th><th>Peer-feedback quality</th><th>Quick check</th></tr></thead><tbody>
+      ${groups.map(g=>`<tr>
+        <td><strong>${esc(g.name)}</strong>${g.id==='1'?' <span class="badge badge-water">Live</span>':''}</td>
+        <td>${g.participation.allContributed?'<span class="badge badge-good">Yes</span>':'<span class="badge badge-warn">No</span>'}</td>
+        <td>${(g.participation.silentMembers||[]).join(', ')||'—'}</td>
+        <td>${Array.isArray(g.participation.feedbackScores)&&g.participation.feedbackScores.length? g.participation.feedbackScores.join(', ') : '—'}</td>
+        <td>${g.quickCheck.attempted? g.quickCheck.score+'/'+g.quickCheck.total : '—'}</td>
+      </tr>`).join('')}
+    </tbody></table></div>
+    <p class="muted" style="margin-top:.6em">Peer-feedback quality: 0 = praise only, 1 = reason or question, 2 = evidence plus an actionable question. Counts inform follow-up — they don't by themselves establish engagement or learning.</p>
+  </div>`;
+}
+
+function tabGroups(){
+  const groups = allGroups();
+  const sel = state.selectedGroup || '1';
+  const g = state.groups[sel];
+  return `
+  <div class="pill-row" style="margin-bottom:1em">
+    ${groups.map(gr=>`<button class="btn btn-sm ${sel===gr.id?'btn-primary':''}" data-selgroup="${gr.id}" type="button">${esc(gr.name)}</button>`).join('')}
+  </div>
+  <div class="card">
+    <h3>${esc(g.name)} ${g.id==='1'?'<span class="badge badge-water">Live, this browser</span>':''}</h3>
+    <p class="muted">Members: ${g.members.map(m=>esc(m.name)).join(', ')}</p>
+    ${g.plan.versions.length? g.plan.versions.map(v=>`
+      <div class="card-flat">
+        <div class="eyebrow">Version ${v.version} · ${fmtDate(v.timestamp)} · by ${esc(v.submittedBy)}</div>
+        <div class="bar-chart">${planBars(v)}</div>
+        <p style="margin-bottom:.2em"><strong>Risk:</strong> ${esc(v.risk)}</p>
+        <p style="margin-bottom:0"><strong>Justification:</strong> ${esc(v.justification)}</p>
+      </div>`).join('') : '<p class="muted">No draft submitted yet.</p>'}
+    <h4 style="margin-top:1em">Comments given</h4>
+    ${g.commentsGiven.length? `<div class="tbl-wrap"><table><thead><tr><th>To</th><th>Strength</th><th>Question</th><th>When</th></tr></thead><tbody>${g.commentsGiven.map(c=>`<tr><td>${esc(c.toGroupName)}</td><td>${esc(c.strength)}</td><td>${esc(c.question)}</td><td class="mono">${fmtDate(c.at)}</td></tr>`).join('')}</tbody></table></div>` : '<p class="muted">None yet.</p>'}
+    <h4 style="margin-top:1em">Reflections</h4>
+    ${g.reflections.length? g.reflections.map(r=>`<div class="comment"><div class="meta">${esc(r.studentName||'')} · ${fmtDate(r.at)}</div>${esc(r.text)}</div>`).join('') : '<p class="muted">None yet.</p>'}
+  </div>`;
+}
+
+function tabWriting(){
+  const rows = [];
+  allGroups().forEach(g=>g.individualWriting.forEach(w=>rows.push({...w, groupName:g.name, groupId:g.id})));
+  if(!rows.length) return '<div class="empty-state">No individual responses submitted yet.</div>';
+  return `
+  <div class="card">
+    <h3>Review queue</h3>
+    <div class="tbl-wrap"><table><thead><tr><th>Group</th><th>Student</th><th>Response</th><th>LORMS level</th><th>Feedback</th></tr></thead><tbody>
+    ${rows.map((w,i)=>`
+      <tr>
+        <td>${esc(w.groupName)}</td>
+        <td>${esc(w.studentName||(w.studentId==='you'?'You':w.studentId))}</td>
+        <td style="max-width:320px"><details><summary>${esc(w.text.slice(0,60))}${w.text.length>60?'…':''}</summary><p style="margin:.5em 0 0">${esc(w.text)}</p></details></td>
+        <td>
+          <select data-levelrow="${w.groupId}:${i}">
+            ${LORMS.map((l,li)=>`<option value="${li}" ${w.lormsLevel===li?'selected':''}>${l.level}</option>`).join('')}
+            <option value="-1" ${w.lormsLevel==null?'selected':''}>Not graded</option>
+          </select>
+        </td>
+        <td><input type="text" data-feedbackrow="${w.groupId}:${i}" value="${esc(w.teacherFeedback||'')}" placeholder="Short feedback..."></td>
+      </tr>`).join('')}
+    </tbody></table></div>
+  </div>`;
+}
+
+function tabAiCoach(){
+  const logs = state.aiCoachLogsAll.slice();
+  allGroups().forEach(g=>g.individualWriting.forEach(w=>{ if(w.aiCoachLog) logs.push({group:g.name, student:w.studentName||'You', log:w.aiCoachLog, at:w.submittedAt}); }));
+  return `
+  <div class="card">
+    <h3>AI coach governance</h3>
+    <label class="toggle"><input type="checkbox" id="aiCoachToggle" ${state.aiCoachEnabled!==false?'checked':''}> AI coach enabled for students</label>
+    <p class="muted" style="margin-top:.6em">If exchanges repeatedly invent citations or give answers instead of questions, switch this off — students fall back to teacher/peer questioning.</p>
+  </div>
+  <div class="card">
+    <h3>Logged exchanges</h3>
+    ${logs.length? logs.map(l=>`<div class="comment"><div class="meta">${esc(l.group)} · ${esc(l.student)} · ${fmtDate(l.at)}</div>${esc(l.log)}</div>`).join('') : '<p class="muted">No exchanges logged yet.</p>'}
+  </div>`;
+}
+
+function tabUsability(){
+  return `
+  <div class="card">
+    <h3>Usability notes</h3>
+    ${state.usabilityNotes.map(n=>`<div class="comment"><div class="meta">${esc(n.by)} · ${fmtDate(n.at)}</div>${esc(n.note)}</div>`).join('')}
+    <label for="newUsability" style="margin-top:.9em; display:block">Add a note (from a think-aloud session or classroom observation)</label>
+    <textarea id="newUsability" placeholder="What happened, and what would you change?"></textarea>
+    <div class="btn-row"><button class="btn btn-sm" id="addUsability" type="button">Add note</button></div>
+  </div>
+  <div class="card-flat">
+    <h4>Continuity fallback</h4>
+    <p style="margin-bottom:0">If links or Wi-Fi fail mid-lesson: printed planners/evidence cards, a projected plan, and verbal teacher feedback preserve the Generate → Consolidate → Revise sequence without this app.</p>
+  </div>`;
+}
+
+function tabSettings(){
+  return `
+  <div class="card">
+    <h3>About this build</h3>
+    <p>This is a self-contained, offline-capable demonstration of the group's technical design (hub, planner, submission, comparison wall, AI coach, teacher dashboard). All data lives in <strong>this browser's local storage only</strong> — nothing is sent anywhere.</p>
+    <p class="muted">For a real multi-device classroom pilot, the planner, wall and dashboard would need a shared data layer (e.g. a small shared database, Google Sheets, or your school's SLS) so every group's device updates the same teacher view — noted here as a known constraint of this offline-deliverable version, consistent with the design brief's low-tech fallback principle.</p>
+  </div>
+  <div class="card">
+    <h3>Export class data</h3>
+    <p class="muted">Copies the full data set as JSON text, for pasting into your own records.</p>
+    <button class="btn" id="exportBtn" type="button">Copy data to clipboard</button>
+    <textarea id="exportArea" style="margin-top:.7em; min-height:8em; font-family:var(--font-mono); font-size:.78rem" readonly hidden></textarea>
+  </div>
+  <div class="card">
+    <h3>Reset demo</h3>
+    <p class="muted">Clears Group 1's live progress and restores the original sample data for Groups 2–8.</p>
+    <button class="btn" id="resetBtn" type="button" style="border-color:var(--warn); color:var(--warn)">Reset all data</button>
+  </div>`;
+}
+
+/* ---------------------------------------------------------------- *
+ * 7. EVENTS
+ * ---------------------------------------------------------------- */
+function goto(step){
+  narratorClose();
+  state.step = step; saveState(); render(); window.scrollTo({top:0,behavior:'smooth'});
+  const id = STEPS[step] && STEPS[step].id;
+  if(id) narratorFire(id);
+}
+
+function wireEvents(){
+  const main = document.getElementById('main');
+
+  main.querySelectorAll('[data-goto]').forEach(b=>b.addEventListener('click', ()=>goto(Number(b.dataset.goto))));
+  main.querySelectorAll('[data-step]').forEach(b=>b.addEventListener('click', ()=>{ if(!b.disabled) goto(Number(b.dataset.step)); }));
+
+  const enterJourney = main.querySelector('#enterJourney');
+  if(enterJourney) enterJourney.addEventListener('click', ()=>{ state.view='journey'; state.step=0; saveState(); render(); narratorFire('welcome'); });
+  const enterDash = main.querySelector('#enterDash');
+  if(enterDash) enterDash.addEventListener('click', ()=>{ state.view='dashboard'; saveState(); render(); });
+  const goDashFromDone = main.querySelector('#goDashFromDone');
+  if(goDashFromDone) goDashFromDone.addEventListener('click', ()=>{ state.view='dashboard'; saveState(); render(); });
+
+  // token inputs (planner + revise)
+  main.querySelectorAll('input[data-tok]').forEach(inp=>{
+    inp.addEventListener('input', ()=>{
+      const t = currentDraftTokens();
+      t[inp.dataset.tok] = Math.max(0, Math.min(999, Number(inp.value)||0));
+      const total = tokensTotal(t);
+      const totalEl = main.querySelector('.token-total');
+      if(totalEl){
+        totalEl.classList.toggle('over', total>100);
+        totalEl.classList.toggle('ok', total<=100);
+        const big = totalEl.querySelector('.big'); if(big) big.textContent = total+' / 100';
+      }
+      const submitBtn = main.querySelector('#submitDraft, #submitRevision');
+      if(submitBtn) submitBtn.disabled = total===0 || total>100;
+    });
+  });
+
+  // idea
+  const saveIdea = main.querySelector('#saveIdea');
+  if(saveIdea) saveIdea.addEventListener('click', ()=>{
+    const val = main.querySelector('#ideaInput').value.trim();
+    const g = g1();
+    let mine = g.individualIdeas.find(i=>i.studentId==='you');
+    if(!mine){ mine = {studentId:'you', text:'', submittedAt:null}; g.individualIdeas.unshift(mine); }
+    mine.text = val; mine.submittedAt = new Date().toISOString();
+    checkBadges(); saveState(); render();
+  });
+
+  // submit draft (v1)
+  const submitDraft = main.querySelector('#submitDraft');
+  if(submitDraft) submitDraft.addEventListener('click', ()=>{
+    const g = g1(); const t = currentDraftTokens();
+    const risk = (document.getElementById('riskInput')||{}).value || '';
+    const just = (document.getElementById('justInput')||{}).value || '';
+    g.plan.versions.push({version:1, tokens:{...t}, risk, justification:just, timestamp:new Date().toISOString(), submittedBy:'You'});
+    draftTokens=null; checkBadges(); saveState(); render(); narratorFire('submit');
+  });
+
+  // planner risk/justification live buffer (so they survive navigation before submit)
+  const riskInput = main.querySelector('#riskInput');
+  if(riskInput) riskInput.addEventListener('input', ()=>{ state.draftRisk = riskInput.value; });
+  const justInput = main.querySelector('#justInput');
+  if(justInput) justInput.addEventListener('input', ()=>{ state.draftJust = justInput.value; });
+
+  // jigsaw
+  main.querySelectorAll('[data-jig]').forEach(b=>b.addEventListener('click', ()=>{
+    const g=g1(); g.jigsaw.memberSet = g.jigsaw.memberSet||{}; g.jigsaw.memberSet.you = b.dataset.jig; saveState(); render();
+  }));
+  const saveJigNotes = main.querySelector('#saveJigNotes');
+  if(saveJigNotes) saveJigNotes.addEventListener('click', ()=>{ g1().jigsaw.notes = main.querySelector('#jigNotes').value; saveState(); });
+
+  // wall comments
+  main.querySelectorAll('[data-comment-on]').forEach(b=>b.addEventListener('click', ()=>{
+    const gid = b.dataset.commentOn; const target = state.groups[gid];
+    const strength = prompt('One evidence-supported strength in '+target.name+"'s plan:");
+    if(strength===null) return;
+    const question = prompt('A probing question for them (e.g. "What trade-off moves if...?")');
+    if(question===null) return;
+    const g = g1();
+    g.commentsGiven.push({toGroup:gid, toGroupName:target.name, strength, question, at:new Date().toISOString()});
+    checkBadges(); saveState(); render();
+  }));
+
+  // quick check
+  main.querySelectorAll('[data-qc]').forEach(b=>b.addEventListener('click', ()=>{
+    const qi = Number(b.dataset.qc), oi = Number(b.dataset.oi);
+    const qcState = state.quiz = state.quiz || {answered:{}};
+    if(qcState.answered[qi]!=null) return;
+    qcState.answered[qi]=oi;
+    const g=g1();
+    const correctCount = Object.keys(qcState.answered).filter(k=>Number(qcState.answered[k])===QUICK_CHECK[k].correct).length;
+    g.quickCheck = {score:correctCount, total:QUICK_CHECK.length, attempted: Object.keys(qcState.answered).length===QUICK_CHECK.length};
+    checkBadges(); saveState(); render();
+  }));
+
+  // revise
+  const submitRevision = main.querySelector('#submitRevision');
+  if(submitRevision) submitRevision.addEventListener('click', ()=>{
+    const g=g1(); const t=currentDraftTokens();
+    const reason = (document.getElementById('reviseReason')||{}).value||'';
+    const nextV = g.plan.versions.length+1;
+    g.plan.versions.push({version:nextV, tokens:{...t}, risk:g.plan.versions[0].risk, justification:reason, timestamp:new Date().toISOString(), submittedBy:'You'});
+    draftTokens=null; state.reviseReason=''; checkBadges(); saveState(); render();
+  });
+  const reviseReason = main.querySelector('#reviseReason');
+  if(reviseReason) reviseReason.addEventListener('input', ()=>{ state.reviseReason = reviseReason.value; });
+
+  // writing
+  const frameToggle = main.querySelector('#frameToggle');
+  if(frameToggle) frameToggle.addEventListener('change', ()=>{ state.showFrame = frameToggle.checked; render(); });
+  const writingInput = main.querySelector('#writingInput');
+  if(writingInput) writingInput.addEventListener('input', ()=>{ state.writingDraft = writingInput.value; });
+  main.querySelectorAll('[data-celj]').forEach(b=>b.addEventListener('click', ()=>{
+    const ta = main.querySelector('#writingInput'); if(!ta) return;
+    const key = b.dataset.celj;
+    const prefix = ta.value && !ta.value.endsWith('\n\n') ? (ta.value.endsWith('\n')?'\n':'\n\n') : '';
+    ta.value += prefix + CELJ_PROMPTS[key] + ' ';
+    state.writingDraft = ta.value;
+    ta.focus(); ta.scrollTop = ta.scrollHeight;
+  }));
+  const saveWriting = main.querySelector('#saveWriting');
+  if(saveWriting) saveWriting.addEventListener('click', ()=>{
+    const g=g1(); let mine = g.individualWriting.find(w=>w.studentId==='you');
+    const val = main.querySelector('#writingInput').value.trim();
+    if(!mine){ mine = {studentId:'you', studentName:'You', text:'', aiCoachLog:'', teacherFeedback:'', lormsLevel:null, graded:false}; g.individualWriting.push(mine); }
+    mine.text = val; mine.submittedAt = new Date().toISOString();
+    checkBadges(); saveState(); render();
+  });
+  const aiLog = main.querySelector('#aiLog');
+  if(aiLog) aiLog.addEventListener('input', ()=>{ state.aiLogDraft = aiLog.value; });
+  const saveAiLog = main.querySelector('#saveAiLog');
+  if(saveAiLog) saveAiLog.addEventListener('click', ()=>{
+    const g=g1(); let mine = g.individualWriting.find(w=>w.studentId==='you');
+    if(!mine){ mine = {studentId:'you', studentName:'You', text:state.writingDraft||'', aiCoachLog:'', teacherFeedback:'', lormsLevel:null, graded:false}; g.individualWriting.push(mine); }
+    mine.aiCoachLog = main.querySelector('#aiLog').value;
+    saveState(); render();
+  });
+
+  // reflect
+  const reflectInput = main.querySelector('#reflectInput');
+  if(reflectInput) reflectInput.addEventListener('input', ()=>{ state.reflectDraft = reflectInput.value; });
+  const saveReflect = main.querySelector('#saveReflect');
+  if(saveReflect) saveReflect.addEventListener('click', ()=>{
+    const g=g1(); let mine = g.reflections.find(r=>r.studentId==='you');
+    const val = main.querySelector('#reflectInput').value.trim();
+    if(!mine){ mine={studentId:'you', studentName:'You', text:'', at:null}; g.reflections.push(mine); }
+    mine.text = val; mine.at = new Date().toISOString();
+    checkBadges(); saveState(); render();
+  });
+
+  // dashboard tabs
+  main.querySelectorAll('[data-ttab]').forEach(b=>b.addEventListener('click', ()=>{ state.tTab=b.dataset.ttab; saveState(); render(); }));
+  main.querySelectorAll('[data-selgroup]').forEach(b=>b.addEventListener('click', ()=>{ state.selectedGroup=b.dataset.selgroup; render(); }));
+
+  // writing review (teacher)
+  main.querySelectorAll('[data-levelrow]').forEach(sel=>sel.addEventListener('change', ()=>{
+    const [gid,idx] = sel.dataset.levelrow.split(':');
+    const w = state.groups[gid].individualWriting[Number(idx)];
+    const v = Number(sel.value); w.lormsLevel = v<0?null:v; saveState();
+  }));
+  main.querySelectorAll('[data-feedbackrow]').forEach(inp=>inp.addEventListener('change', ()=>{
+    const [gid,idx] = inp.dataset.feedbackrow.split(':');
+    state.groups[gid].individualWriting[Number(idx)].teacherFeedback = inp.value; saveState();
+  }));
+
+  // ai coach toggle
+  const aiCoachToggle = main.querySelector('#aiCoachToggle');
+  if(aiCoachToggle) aiCoachToggle.addEventListener('change', ()=>{ state.aiCoachEnabled = aiCoachToggle.checked; saveState(); });
+
+  // usability
+  const addUsability = main.querySelector('#addUsability');
+  if(addUsability) addUsability.addEventListener('click', ()=>{
+    const val = main.querySelector('#newUsability').value.trim(); if(!val) return;
+    state.usabilityNotes.unshift({by:'Teacher', note:val, at:new Date().toISOString()});
+    saveState(); render();
+  });
+
+  // settings
+  const exportBtn = main.querySelector('#exportBtn');
+  if(exportBtn) exportBtn.addEventListener('click', ()=>{
+    const area = main.querySelector('#exportArea');
+    area.value = JSON.stringify(state, null, 2); area.hidden=false;
+    copyToClipboard(area.value, exportBtn);
+  });
+  const resetBtn = main.querySelector('#resetBtn');
+  if(resetBtn) resetBtn.addEventListener('click', ()=>{ resetAll(); });
+
+  // quiz "why" reveal already shown via class; add correctness styling after click (re-render handles disabled-looking via answered map)
+  if(state.quiz && state.quiz.answered){
+    Object.entries(state.quiz.answered).forEach(([qi,oi])=>{
+      main.querySelectorAll(`[data-qc="${qi}"]`).forEach(btn=>{
+        const o = Number(btn.dataset.oi);
+        btn.disabled = true;
+        if(o===QUICK_CHECK[qi].correct) btn.classList.add('correct');
+        else if(o===Number(oi)) btn.classList.add('incorrect');
+      });
+      const why = main.querySelector(`[data-why="${qi}"]`); if(why) why.hidden=false;
+    });
+  }
+}
+
+/* ---------------------------------------------------------------- *
+ * 8. GLOBAL CHROME EVENTS
+ * ---------------------------------------------------------------- */
+document.getElementById('btnViewStudent').addEventListener('click', ()=>{ narratorClose(); state.view = 'journey'; saveState(); render(); });
+document.getElementById('btnViewTeacher').addEventListener('click', ()=>{ narratorClose(); state.view='dashboard'; saveState(); render(); });
+document.getElementById('fsUp').addEventListener('click', ()=>{ state.fontStep = Math.min(3,(state.fontStep||0)+1); applyA11y(); saveState(); });
+document.getElementById('fsDown').addEventListener('click', ()=>{ state.fontStep = Math.max(-1,(state.fontStep||0)-1); applyA11y(); saveState(); });
+document.getElementById('contrastBtn').addEventListener('click', ()=>{
+  state.theme = state.theme==='dark' ? 'light' : (state.theme==='light' ? 'system' : 'dark');
+  applyA11y(); saveState();
+});
+function updateSoundBtn(){
+  const b = document.getElementById('soundBtn');
+  if(!b) return;
+  const on = state.soundOn!==false;
+  b.style.opacity = on?'1':'.45';
+  b.setAttribute('aria-pressed', String(on));
+  b.title = on ? 'Sound on — click to mute' : 'Sound muted — click to unmute';
+}
+document.getElementById('soundBtn').addEventListener('click', ()=>{
+  state.soundOn = state.soundOn===false ? true : false;
+  updateSoundBtn(); saveState();
+  if(state.soundOn) playChime('tick');
+});
+document.getElementById('narratorBox').addEventListener('click', narratorAdvance);
+document.getElementById('narratorClose').addEventListener('click', (e)=>{ e.stopPropagation(); narratorClose(); });
+
+/* ---------------------------------------------------------------- *
+ * 9. BOOT
+ * ---------------------------------------------------------------- */
+function start(hotData){
+  state = (hotData && hotData.state) ? hotData.state : loadState();
+  applyA11y();
+  render();
+}
+if (window.claude && window.claude.hot) {
+  window.claude.hot.snapshot(() => ({ state }));
+  window.claude.hot.ready ? window.claude.hot.ready(start) : start(window.claude.hot.data || {});
+} else {
+  start();
+}
+
+})();
+</script>
+
+</body></html>
