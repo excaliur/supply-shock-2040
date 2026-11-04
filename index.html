@@ -1,4 +1,3 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <meta name="claude:viewport-fit-sides" content="cover">
 <title>Supply Shock 2040</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap">
@@ -14,13 +13,13 @@
            tokens, timestamps and every figure that should line up)
    ---------------------------------------------------------------------- */
 :root{
-  --bg:#05070f; --surface:#0b1026; --surface-2:#10163a;
-  --ink:#eaf6ff; --ink-dim:#8294c2; --line:#1d2c52;
-  --water:#00e5ff; --water-ink:#9df3ff; --water-soft:#06202c;
-  --food:#ff9d2e; --food-ink:#ffd199; --food-soft:#2a1704;
-  --plum:#c061ff; --plum-ink:#e8c3ff; --plum-soft:#200b36;
-  --warn:#ff3b6b; --warn-soft:#2b0414;
-  --good:#39ff9d; --good-soft:#06241a;
+  --bg:#05070f; --surface:#141b3f; --surface-2:#1d2758; --surface-3:#252f6e;
+  --ink:#eaf6ff; --ink-dim:#90a1cc; --line:#374a8c;
+  --water:#00e5ff; --water-ink:#9df3ff; --water-soft:#0a2a3a;
+  --food:#ff9d2e; --food-ink:#ffd199; --food-soft:#3a2208;
+  --plum:#c061ff; --plum-ink:#e8c3ff; --plum-soft:#2c1148;
+  --warn:#ff3b6b; --warn-soft:#380519;
+  --good:#39ff9d; --good-soft:#0a301f;
   --accent-text:#04101c;
   --font-display:'Orbitron', 'Rajdhani', sans-serif;
   --font-body:'Rajdhani', -apple-system, 'Segoe UI', sans-serif;
@@ -34,8 +33,8 @@
    a brighter, thicker-bordered High-Contrast Neon variant rather than a literal
    light theme — keeping a genuine accessibility option without breaking the skin. */
 :root[data-theme="light"]{
-  --bg:#000000; --surface:#060a16; --surface-2:#0b1430;
-  --ink:#ffffff; --ink-dim:#c3d2f2; --line:#3f66ad;
+  --bg:#000000; --surface:#0b1430; --surface-2:#13205a; --surface-3:#1a2c74;
+  --ink:#ffffff; --ink-dim:#c3d2f2; --line:#4f74c4;
   --water:#3df2ff; --water-ink:#e3fcff; --water-soft:#07222f;
   --food:#ffb24d; --food-ink:#ffe8c7; --food-soft:#301c04;
   --plum:#d58bff; --plum-ink:#f6e3ff; --plum-soft:#271040;
@@ -149,9 +148,13 @@ textarea{resize:vertical; min-height:5em; font-family:var(--font-body)}
 
 /* ---- XP bar ---- */
 .xpbar{display:flex; align-items:center; gap:.8em; max-width:1180px; margin:0 auto .9em; padding:0 max(16px, env(safe-area-inset-left,0px)) 0 max(16px, env(safe-area-inset-right,0px))}
+.xpbar[hidden]{display:none}
 .xpbar .xp-title{font-family:var(--font-mono); font-size:.72rem; text-transform:uppercase; letter-spacing:.04em; font-weight:700; color:var(--ink-dim); white-space:nowrap}
-.xpbar .xp-track{flex:1; height:8px; border-radius:999px; background:var(--surface-2); border:1.5px solid var(--line); overflow:hidden}
-.xpbar .xp-fill{height:100%; border-radius:999px; transition:width .4s ease}
+.xpbar .xp-track{flex:1; display:flex; align-items:center; gap:3px; height:10px}
+.xpbar .xp-seg{flex:1; min-width:3px; height:100%; border-radius:3px; background:var(--surface-2); border:1.5px solid var(--line); transition:background .2s ease, border-color .2s ease, transform .2s ease}
+.xpbar .xp-seg.filled{border-color:transparent}
+.xpbar .xp-seg.current{transform:scaleY(1.35)}
+.xpbar .xp-step-label{font-family:var(--font-mono); font-size:.72rem; color:var(--ink-dim); white-space:nowrap}
 .xpbar .xp-badge-count{font-family:var(--font-mono); font-size:.72rem; color:var(--ink-dim); white-space:nowrap; display:flex; align-items:center; gap:.3em}
 .topbar,#xpbar,#main{position:relative; z-index:1}
 h1,h2,h3,h4{letter-spacing:.01em}
@@ -163,7 +166,17 @@ h1,h2,h3,h4{letter-spacing:.01em}
 
 /* ---- cards & chrome ---- */
 .card{background:var(--surface); border:1.5px solid var(--line); border-radius:var(--radius); padding:1.2em; box-shadow:var(--shadow); margin-bottom:1.1em}
-.card-flat{background:var(--surface-2); border:1.5px solid var(--line); border-radius:var(--radius); padding:1em 1.1em; margin-bottom:.9em}
+.card-flat{background:var(--surface-2); border:1.5px solid var(--line); border-radius:var(--radius); padding:1em 1.1em; margin-bottom:.9em; box-shadow:inset 0 1px 0 rgba(255,255,255,.04)}
+.card-pop{background:var(--surface-3); border:1.5px solid var(--line); border-radius:var(--radius); padding:1.2em; box-shadow:var(--shadow); margin-bottom:1.1em}
+/* Lesson-level accent: every .card/.card-flat/.card-pop inside a lesson zone picks up
+   a thin left bar in that lesson's color, so boxes read apart from the background and
+   from each other at a glance — not just by the (often faint) border line. */
+.main[data-accent] .card,.main[data-accent] .card-flat,.main[data-accent] .card-pop{border-left-width:4px}
+.main[data-accent="water"] .card,.main[data-accent="water"] .card-flat,.main[data-accent="water"] .card-pop{border-left-color:var(--water)}
+.main[data-accent="food"] .card,.main[data-accent="food"] .card-flat,.main[data-accent="food"] .card-pop{border-left-color:var(--food)}
+.main[data-accent="plum"] .card,.main[data-accent="plum"] .card-flat,.main[data-accent="plum"] .card-pop{border-left-color:var(--plum)}
+.main[data-accent="good"] .card,.main[data-accent="good"] .card-flat,.main[data-accent="good"] .card-pop{border-left-color:var(--good)}
+.main[data-accent="neutral"] .card,.main[data-accent="neutral"] .card-flat,.main[data-accent="neutral"] .card-pop{border-left-color:var(--ink-dim)}
 .eyebrow{font-family:var(--font-mono); font-size:.72rem; text-transform:uppercase; letter-spacing:.07em; color:var(--water-ink); font-weight:600; display:flex; align-items:center; gap:.5em; margin-bottom:.4em}
 .eyebrow.food{color:var(--food-ink)}
 .badge{display:inline-flex; align-items:center; gap:.35em; font-size:.74rem; font-weight:700; padding:.22em .6em; border-radius:999px; font-family:var(--font-mono); text-transform:uppercase; letter-spacing:.03em}
@@ -199,6 +212,21 @@ h1,h2,h3,h4{letter-spacing:.01em}
 #confettiLayer{position:fixed; inset:0; pointer-events:none; z-index:999}
 @media (prefers-reduced-motion:reduce){ #confettiLayer{display:none} }
 
+/* ---- badge-earned toast + achievements panel (so stars on the xp bar
+   are explained, not just a number that changes) ---- */
+.badge-toast{position:fixed; left:50%; bottom:1.4em; transform:translateX(-50%); z-index:700; display:flex; align-items:center; gap:.7em; background:var(--surface); border:1.5px solid var(--food); border-radius:999px; padding:.55em .9em .55em .55em; box-shadow:var(--shadow); max-width:92vw}
+.badge-toast[hidden]{display:none}
+.badge-toast .bt-ico{width:2.1em; height:2.1em; border-radius:50%; background:var(--food-soft); color:var(--food-ink); display:flex; align-items:center; justify-content:center; flex:none}
+.badge-toast .bt-text{display:flex; flex-direction:column; line-height:1.25}
+.badge-toast .bt-label{font-family:var(--font-mono); font-size:.64rem; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-dim)}
+.badge-toast .bt-name{font-weight:700; font-size:.88rem}
+@media (prefers-reduced-motion:no-preference){
+  .badge-toast.show{animation:toastIn .25s ease-out}
+  @keyframes toastIn{from{opacity:0; transform:translateX(-50%) translateY(10px)} to{opacity:1; transform:translateX(-50%) translateY(0)}}
+}
+.xp-badge-count{cursor:pointer; border-radius:999px; padding:.15em .55em; border:1px solid transparent}
+.xp-badge-count:hover, .xp-badge-count:focus-visible{border-color:var(--line); background:var(--surface-2)}
+
 /* ---- narrator / mission-comms dialog (sits in normal flow above the
    step card, never overlapping nav buttons) ---- */
 #narrator{max-width:1180px; margin:0 auto .9em; padding:0 max(16px, env(safe-area-inset-left,0px)) 0 max(16px, env(safe-area-inset-right,0px))}
@@ -212,6 +240,7 @@ h1,h2,h3,h4{letter-spacing:.01em}
 .narrator-close{position:absolute; top:.4em; right:.5em; background:none; border:none; color:var(--ink-dim); font-size:.9rem; line-height:1; padding:.3em}
 @media (prefers-reduced-motion:no-preference){
   .narrator-text.typing::after{content:'▌'; animation:blinkCaret .8s step-end infinite; color:var(--water)}
+  .cons-type.typing::after{content:'▌'; animation:blinkCaret .8s step-end infinite; color:var(--warn)}
 }
 @keyframes blinkCaret{50%{opacity:0}}
 
@@ -283,14 +312,59 @@ tbody tr:hover{background:var(--surface-2)}
 .feedback-score{display:flex; gap:.3em}
 .fscore-btn{width:2.1em; height:2.1em; border-radius:7px; border:1.5px solid var(--line); background:var(--surface); font-family:var(--font-mono); font-weight:700}
 .fscore-btn[aria-pressed="true"]{background:var(--ink); color:var(--bg); border-color:var(--ink)}
-.evidence-card{border:1.5px solid var(--line); border-radius:9px; padding:.9em 1em; margin-bottom:.7em; background:var(--surface-2)}
+.evidence-card{border:1.5px solid var(--line); border-left-width:4px; border-radius:9px; padding:.9em 1em; margin-bottom:.7em; background:var(--surface-2)}
 .evidence-card .src{font-family:var(--font-mono); font-size:.72rem; color:var(--ink-dim); margin-top:.4em; display:block}
-.frame-pill{display:inline-block; font-family:var(--font-mono); font-size:.7rem; background:var(--surface-2); border:1px solid var(--line); padding:.25em .55em; border-radius:6px; margin:.1em .3em .1em 0}
+.evidence-card.water{border-left-color:var(--water); background:var(--water-soft)}
+.evidence-card.food{border-left-color:var(--food); background:var(--food-soft)}
+
+/* ---- disclosure widgets: evidence cards + consolidation hotspots open
+   on click so the main point shows first, detail second (cognitive load) ---- */
+details.evidence-card, details.hotspot{padding:0; cursor:default}
+details.evidence-card summary, details.hotspot summary{list-style:none; cursor:pointer; padding:.9em 1em; display:flex; align-items:flex-start; justify-content:space-between; gap:.8em}
+details.hotspot summary{padding:.8em}
+details.evidence-card summary::-webkit-details-marker, details.hotspot summary::-webkit-details-marker{display:none}
+details.evidence-card summary::marker, details.hotspot summary::marker{content:''}
+details.evidence-card .ev-summary-text{display:flex; flex-direction:column; gap:.3em; min-width:0}
+details.evidence-card .ev-gist{font-size:.9rem; color:var(--ink-dim); font-weight:400}
+details.evidence-card p, details.hotspot p{padding:0 1em .9em}
+details.hotspot[open] p{padding-top:0}
+.disc-chev{flex:none; color:var(--ink-dim); transition:transform .15s ease; margin-top:.15em}
+details[open] .disc-chev{transform:rotate(90deg); color:var(--water-ink)}
+details.evidence-card .src{padding:0 1em .9em; margin-top:-.3em}
+
+/* ---- simulated comment-popup modal (gallery walk) ---- */
+.modal-overlay{position:fixed; inset:0; z-index:500; display:flex; align-items:center; justify-content:center; padding:16px; background:rgba(2,4,12,.72); backdrop-filter:blur(2px)}
+.modal-overlay[hidden]{display:none}
+.modal-box{width:100%; max-width:440px; background:var(--surface); border:1.5px solid var(--water); border-radius:var(--radius); box-shadow:var(--shadow); padding:1.2em 1.3em 1.3em; position:relative}
+.modal-box h3{margin-top:0; margin-bottom:.2em}
+.modal-close{position:absolute; top:.7em; right:.7em; background:none; border:none; color:var(--ink-dim); padding:.35em; border-radius:6px}
+.modal-close:hover{color:var(--ink)}
+.modal-box label{margin-top:.8em}
+.modal-box textarea{min-height:4.5em}
+.role-card{border-left-width:4px}
+.role-card:nth-child(4n+1){border-left-color:var(--water)}
+.role-card:nth-child(4n+1) strong svg{color:var(--water)}
+.role-card:nth-child(4n+2){border-left-color:var(--food)}
+.role-card:nth-child(4n+2) strong svg{color:var(--food)}
+.role-card:nth-child(4n+3){border-left-color:var(--plum)}
+.role-card:nth-child(4n+3) strong svg{color:var(--plum)}
+.role-card:nth-child(4n+4){border-left-color:var(--good)}
+.role-card:nth-child(4n+4) strong svg{color:var(--good)}
+.lvl-dots{font-family:var(--font-mono); letter-spacing:.08em; color:var(--plum); font-size:.85em}
+.frame-pill{display:inline-flex; align-items:center; gap:.35em; font-family:var(--font-mono); font-size:.7rem; background:var(--surface-2); border:1px solid var(--line); padding:.25em .55em; border-radius:6px; margin:.1em .3em .1em 0}
+.frame-pill svg{flex:none}
+.frame-pill.claim{border-color:var(--water); color:var(--water-ink)}
+.frame-pill.evidence{border-color:var(--good); color:var(--good)}
+.frame-pill.limitation{border-color:var(--warn); color:var(--warn)}
+.frame-pill.judgement{border-color:var(--plum); color:var(--plum-ink)}
 .toggle{display:inline-flex; align-items:center; gap:.5em; cursor:pointer}
 .toggle input{width:2.4em; height:1.4em; appearance:none; background:var(--line); border-radius:999px; position:relative; border:none; padding:0; cursor:pointer}
 .toggle input::after{content:'';position:absolute; width:1.1em; height:1.1em; border-radius:50%; background:#fff; top:.15em; left:.15em; transition:left .15s}
 .toggle input:checked{background:var(--water)}
 .toggle input:checked::after{left:1.15em}
+.dnote{display:none; border-left:4px solid var(--plum); background:var(--plum-soft); padding:.7em 1em; border-radius:0 10px 10px 0; font-size:.85rem; line-height:1.5; margin:.3em 0}
+.dnote b{font-family:var(--font-mono); font-size:.66rem; letter-spacing:.06em; text-transform:uppercase; color:var(--plum-ink); display:block; margin-bottom:.3em}
+body.show-notes .dnote{display:block}
 .empty-state{text-align:center; padding:2.4em 1em; color:var(--ink-dim)}
 .aicoach-off{opacity:.6}
 .pill-row{display:flex; flex-wrap:wrap; gap:.4em}
@@ -320,9 +394,36 @@ footer.page-end{margin:2.4em 0 1.2em; padding-top:1.1em; border-top:1.5px solid 
     <button class="fs-btn" id="fsDown" aria-label="Decrease text size">A-</button>
     <button class="fs-btn" id="fsUp" aria-label="Increase text size">A+</button>
     <button class="fs-btn" id="contrastBtn" aria-label="Toggle high contrast / dark mode" title="Toggle theme">◐</button>
+    <button class="fs-btn" id="notesBtn" aria-pressed="false" aria-label="Toggle design notes" title="Toggle design notes (why each screen is built this way)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4.5" y="3.5" width="15" height="17" rx="2"/><path d="M8 8.5h8M8 12h8M8 15.5h5"/></svg></button>
+    <button class="fs-btn" id="resetTopBtn" aria-label="Reset all your progress" title="Reset all your progress"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.7 3.6 10.3 8l-4.2.5"/><path d="M4.4 12.3 2 16.6l5 .2"/><path d="M13 20.6l4.3-.3-1.7-4.5"/><path d="M10 8h4.9l2.5 4.4"/><path d="M5 15l-2.9 1.6 2.7 4.5"/><path d="M14.7 20.3 17 16l4.7.4"/></svg></button>
   </div>
 </div>
 <div id="xpbar" class="xpbar" hidden></div>
+<div id="badgeToast" class="badge-toast" hidden role="status" aria-live="polite">
+  <span class="bt-ico" id="badgeToastIco" aria-hidden="true"></span>
+  <span class="bt-text"><span class="bt-label">Achievement unlocked</span><span class="bt-name" id="badgeToastName"></span></span>
+</div>
+<div id="achvPanel" class="modal-overlay" hidden>
+  <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="achvPanelTitle" style="max-width:520px">
+    <button class="modal-close" id="achvClose" type="button" aria-label="Close">✕</button>
+    <div class="eyebrow">Achievements</div>
+    <h3 id="achvPanelTitle">How you earn stars</h3>
+    <p class="muted" style="margin-top:-.2em">Each badge below is one concrete thing you do in the journey — not a score. <span id="achvCountLine"></span></p>
+    <div class="badge-shelf" id="achvList"></div>
+  </div>
+</div>
+<div id="resetConfirmModal" class="modal-overlay" hidden>
+  <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="resetConfirmTitle">
+    <button class="modal-close" id="resetConfirmClose" type="button" aria-label="Close">✕</button>
+    <div class="eyebrow">Reset</div>
+    <h3 id="resetConfirmTitle">Reset everything you've entered?</h3>
+    <p class="muted">This clears your name, group, chosen roles, ideas, plans, comments, quick check, written response and reflection, and takes you back to the start. Groups 2–8 go back to their original sample data. <strong>This can't be undone.</strong></p>
+    <div class="btn-row" style="margin-top:.9em">
+      <button class="btn" id="resetConfirmCancel" type="button">Cancel</button>
+      <button class="btn btn-primary" id="resetConfirmGo" type="button" style="border-color:var(--warn); background:var(--warn); color:var(--accent-text)">Yes, reset everything</button>
+    </div>
+  </div>
+</div>
 <div id="narrator" hidden role="status" aria-live="polite">
   <div class="narrator-inner">
     <div class="narrator-avatar" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20.5v-5"/><circle cx="12" cy="12" r="2.1"/><path d="M8.4 8.4a5 5 0 0 0 0 7.2"/><path d="M15.6 8.4a5 5 0 0 1 0 7.2"/><path d="M5.3 5.3a9.4 9.4 0 0 0 0 13.4"/><path d="M18.7 5.3a9.4 9.4 0 0 1 0 13.4"/></svg></div>
@@ -375,6 +476,9 @@ const ICONS = {
   trophy: '<path d="M7.5 4h9v5a4.5 4.5 0 0 1-9 0V4Z"/><path d="M7.5 5.5H4a3 3 0 0 0 3.3 3"/><path d="M16.5 5.5H20a3 3 0 0 1-3.3 3"/><path d="M12 13.5V17"/><path d="M8.3 20.5h7.4"/><path d="M9.5 17h5l.8 3.5h-6.6Z"/>',
   signal: '<path d="M12 20.5v-5"/><circle cx="12" cy="12" r="2.1"/><path d="M8.4 8.4a5 5 0 0 0 0 7.2"/><path d="M15.6 8.4a5 5 0 0 1 0 7.2"/><path d="M5.3 5.3a9.4 9.4 0 0 0 0 13.4"/><path d="M18.7 5.3a9.4 9.4 0 0 1 0 13.4"/>',
   bolt: '<path d="M12.5 2.5 4.5 14h6l-1 7.5 9-13h-6.5l.5-6Z"/>',
+  chevron: '<path d="M8.5 5 15.5 12 8.5 19"/>',
+  close: '<path d="M5 5 19 19"/><path d="M19 5 5 19"/>',
+  stop: '<rect x="5.5" y="5.5" width="13" height="13" rx="2.5"/>',
 };
 function ic(name, size){
   size = size||20;
@@ -663,14 +767,14 @@ const PRECEDENTS = [
 
 const EVIDENCE_SETS = {
   water:[
-    {title:'Rainfall variability, 1980–2020', body:'Singapore’s annual rainfall total has not fallen sharply, but the pattern inside each year has become patchier — longer dry stretches between heavier bursts. A reservoir system designed around a steady drizzle has to work harder to catch the same amount of water.', src:'Adapted classroom data set, Geography Dept.'},
-    {title:'Four National Taps, capacity shares', body:'Local catchment and imported water historically covered most daily demand; NEWater and desalinated water were built up as supply that does not depend on rainfall at all, at a higher energy cost per litre.', src:'PUB (2024), simplified for classroom use'},
-    {title:'Energy cost of “new water”', body:'Desalination and NEWater both need treatment energy that catchment water does not. Leaning harder on them for resilience also means a bigger electricity bill and a bigger carbon footprint to manage.', src:'Classroom briefing note'},
+    {title:'Rainfall variability, 1980–2020', gist:'Rainfall totals are stable, but the pattern within each year is getting patchier — longer dry stretches between heavier bursts.', body:'Singapore’s annual rainfall total has not fallen sharply, but the pattern inside each year has become patchier — longer dry stretches between heavier bursts. A reservoir system designed around a steady drizzle has to work harder to catch the same amount of water.', src:'Adapted classroom data set, Geography Dept.'},
+    {title:'Four National Taps, capacity shares', gist:'Catchment and imported water cover most daily demand; NEWater and desalination add rainfall-independent backup at a higher energy cost.', body:'Local catchment and imported water historically covered most daily demand; NEWater and desalinated water were built up as supply that does not depend on rainfall at all, at a higher energy cost per litre.', src:'PUB (2024), simplified for classroom use'},
+    {title:'Energy cost of “new water”', gist:'Leaning harder on NEWater/desalination for resilience trades water security for a bigger energy bill and carbon footprint.', body:'Desalination and NEWater both need treatment energy that catchment water does not. Leaning harder on them for resilience also means a bigger electricity bill and a bigger carbon footprint to manage.', src:'Classroom briefing note'},
   ],
   food:[
-    {title:'Singapore’s food import share', body:'Singapore imports the large majority of the food it eats, from a wide range of trading partners. That spread is itself a resilience strategy — but it still means almost everything on the table has crossed a border.', src:'SFA (n.d.-a), simplified for classroom use'},
-    {title:'From three baskets to Singapore Food Story 2', body:'An earlier approach talked about three “food baskets” — diversifying import sources, growing more locally, and investing overseas. The current Singapore Food Story 2 regroups this thinking into pillars: diversify imports, build global partnerships, stockpile, and grow local.', src:'Lim (2021); SFA (n.d.-a)'},
-    {title:'Limits of “grow local”', body:'Local production (including high-tech urban farms) is growing, but land is scarce and expensive, so it is realistic as one pillar among several rather than a full replacement for imports.', src:'Classroom briefing note'},
+    {title:'Singapore’s food import share', gist:'Singapore imports most of what it eats, spread across many trading partners — a resilience strategy that still crosses a border each time.', body:'Singapore imports the large majority of the food it eats, from a wide range of trading partners. That spread is itself a resilience strategy — but it still means almost everything on the table has crossed a border.', src:'SFA (n.d.-a), simplified for classroom use'},
+    {title:'From three baskets to Singapore Food Story 2', gist:'An earlier "three baskets" idea has been regrouped into four pillars: diversify imports, global partnerships, stockpile, grow local.', body:'An earlier approach talked about three “food baskets” — diversifying import sources, growing more locally, and investing overseas. The current Singapore Food Story 2 regroups this thinking into pillars: diversify imports, build global partnerships, stockpile, and grow local.', src:'Lim (2021); SFA (n.d.-a)'},
+    {title:'Limits of “grow local”', gist:'Local production is growing, but land scarcity means it can only ever be one pillar among several, not a full replacement for imports.', body:'Local production (including high-tech urban farms) is growing, but land is scarce and expensive, so it is realistic as one pillar among several rather than a full replacement for imports.', src:'Classroom briefing note'},
   ],
 };
 
@@ -714,6 +818,7 @@ const CELJ_PROMPTS = {
 const WRITING_PROMPT = 'To what extent can expanding local food production strengthen Singapore’s food security in a changing climate?';
 
 const ROLES = ['Facilitator','Evidence checker','Recorder','Questioner'];
+const ROLE_ICON = {'Facilitator':'handshake','Evidence checker':'signal','Recorder':'pencil','Questioner':'bolt'};
 const ROLE_BLURBS = {
   'Facilitator':'Makes sure every member contributes an idea before the group locks in an allocation.',
   'Evidence checker':'Cross-references the group’s assumptions against the precedents and evidence sets.',
@@ -738,11 +843,66 @@ function checkBadges(){
   const earned = earnedBadgeIds(g);
   const prev = state.earnedBadges || [];
   const fresh = earned.filter(id=>!prev.includes(id));
-  if(fresh.length){ state.earnedBadges = earned; celebrate('badge'); }
-  else if(earned.length!==prev.length){ state.earnedBadges = earned; }
+  if(fresh.length){
+    state.earnedBadges = earned;
+    celebrate('badge');
+    showBadgeToast(BADGES.find(b=>b.id===fresh[0]));
+  } else if(earned.length!==prev.length){ state.earnedBadges = earned; }
 }
 
-const EDCAFE_URL = 'https://edcafe.example.sg/coach'; // replace with your school's approved EdCafe link
+/* Names the badge that was just earned, so the star count on the xp bar
+ * isn't a number that changes with no explanation. Auto-dismisses; also
+ * closeable by re-triggering. */
+let _badgeToastTimer = null;
+function showBadgeToast(badge){
+  if(!badge) return;
+  const toast = document.getElementById('badgeToast');
+  if(!toast) return;
+  document.getElementById('badgeToastIco').innerHTML = ic(badge.icon, 18);
+  document.getElementById('badgeToastName').textContent = badge.name + ' — ' + badge.desc;
+  toast.hidden = false;
+  toast.classList.remove('show'); void toast.offsetWidth; toast.classList.add('show');
+  clearTimeout(_badgeToastTimer);
+  _badgeToastTimer = setTimeout(()=>{ toast.hidden = true; }, 4200);
+}
+
+/* Achievements panel — lets a student check "how do I earn stars" at any
+ * point in the journey, not just on the final summary screen. */
+function renderAchvList(){
+  const list = document.getElementById('achvList');
+  const line = document.getElementById('achvCountLine');
+  if(!list) return;
+  const g = g1();
+  const earned = earnedBadgeIds(g);
+  if(line) line.textContent = `${earned.length} / ${BADGES.length} earned so far.`;
+  list.innerHTML = BADGES.map(b=>{
+    const got = earned.includes(b.id);
+    return `<div class="achv ${got?'earned':''}">
+      <span class="achv-ico">${ic(got?b.icon:'lock',22)}</span>
+      <span class="achv-name">${esc(b.name)}</span>
+      <span class="achv-desc">${esc(b.desc)}</span>
+    </div>`;
+  }).join('');
+}
+function openAchvPanel(){
+  renderAchvList();
+  const panel = document.getElementById('achvPanel');
+  if(panel) panel.hidden = false;
+}
+function closeAchvPanel(){
+  const panel = document.getElementById('achvPanel');
+  if(panel) panel.hidden = true;
+}
+function openResetConfirm(){
+  const m = document.getElementById('resetConfirmModal');
+  if(m) m.hidden = false;
+}
+function closeResetConfirm(){
+  const m = document.getElementById('resetConfirmModal');
+  if(m) m.hidden = true;
+}
+
+const EDCAFE_URL = 'https://app.edcafe.ai/join/zeU9juagbCP4EOWguGUnQaOeqtD1sGTAmbiTKmcapnBHpgd2f8lnLTxXfDD9F8y7';
 
 /* ---------------------------------------------------------------- *
  * 1. SEED DATA — 7 groups of "classmates" so the wall & dashboard
@@ -827,7 +987,7 @@ function daysAgo(d, jitterIdx){ const dt = new Date(); dt.setDate(dt.getDate()-d
 
 function freshGroup1(){
   const members = [
-    {id:'you', name:'You', roleL1:ROLES[0], roleL2:ROLES[1], roleL3:ROLES[2]},
+    {id:'you', name:'You', roleL1:null, roleL2:null, roleL3:null},
     {id:'g1_1', name:'Aarav', roleL1:ROLES[1], roleL2:ROLES[2], roleL3:ROLES[3]},
     {id:'g1_2', name:'Beatrice', roleL1:ROLES[2], roleL2:ROLES[3], roleL3:ROLES[0]},
     {id:'g1_3', name:'Chong Wei', roleL1:ROLES[3], roleL2:ROLES[0], roleL3:ROLES[1]},
@@ -864,6 +1024,8 @@ function freshState(){
     fontStep:0, theme:'system',
     view:'start', // start | journey | dashboard
     step:0,       // journey step index
+    reportDone:false, // gates the journey behind the name/group "report" pop-up
+    onboardingV2:true, // marks this save as already on the report-gate/role-picker onboarding — see migrateOnboardingV2
     tTab:'overview', // teacher tab
     liveMemberId:'you',
     aiCoachEnabled:true,
@@ -884,8 +1046,24 @@ function loadState(){
     if(!raw) return freshState();
     const parsed = JSON.parse(raw);
     if(!parsed || !parsed.groups || !parsed.groups['1']) return freshState();
+    migrateOnboardingV2(parsed);
     return parsed;
   }catch(e){ return freshState(); }
+}
+/* One-time migration for saves made before the report-gate / role-picker
+ * onboarding existed. Those saves already have a "you" member with
+ * roleL1/roleL2 pre-seeded from the old default (ROLES[0]) and no
+ * reportDone flag — left alone, the new welcome/jigsaw steps would read
+ * that leftover role as "already confirmed" and silently skip the picker,
+ * which is exactly the "shows Facilitator no matter what I pick" bug.
+ * Runs once per browser: resets identity + both chosen roles so the new
+ * flow starts clean, then stamps onboardingV2 so it never runs again. */
+function migrateOnboardingV2(parsed){
+  if(parsed.onboardingV2) return;
+  parsed.onboardingV2 = true;
+  parsed.reportDone = false;
+  const you = parsed.groups['1'] && parsed.groups['1'].members.find(m=>m.id==='you');
+  if(you){ you.roleL1 = null; you.roleL2 = null; }
 }
 function saveState(){
   try{ localStorage.setItem(STORE_KEY, JSON.stringify(state)); }catch(e){ /* storage unavailable — continue without persistence */ }
@@ -893,6 +1071,14 @@ function saveState(){
 function resetAll(){
   try{ localStorage.removeItem(STORE_KEY); }catch(e){}
   state = freshState();
+  // clear transient (non-persisted) working buffers too, or a stale one
+  // would silently reappear the moment its step is revisited after reset
+  draftTokens = null;
+  commentModal = null;
+  dashboardUnlocked = false;
+  pinError = false;
+  preGateView = 'start';
+  reportDraft = {name:'', groupNo:''};
   applyA11y(); render();
 }
 
@@ -905,18 +1091,50 @@ function g1(){ return state.groups['1']; }
 function latestPlan(group){ const v = group.plan.versions; return v.length? v[v.length-1] : null; }
 function firstPlan(group){ return group.plan.versions[0] || null; }
 function catById(id){ return TOKEN_CATS.find(c=>c.id===id); }
-function speak(text){
+// Only one utterance can play at a time, so track whichever read-aloud
+// button is currently "live" and reset it if a different one starts
+// (or speech ends on its own) — every button needs a stop control, not
+// just the one that started it.
+let _speakingBtn = null;
+function setSpeakBtnPlaying(btn){
+  if(!btn) return;
+  btn.dataset.playing = 'true';
+  btn.innerHTML = ic('stop',15)+' Stop reading';
+}
+function resetSpeakBtn(btn){
+  if(!btn) return;
+  btn.dataset.playing = 'false';
+  btn.innerHTML = ic('speaker',15)+' Read this step aloud';
+}
+function stopSpeaking(){
+  try{ if('speechSynthesis' in window) window.speechSynthesis.cancel(); }catch(e){}
+  resetSpeakBtn(_speakingBtn);
+  _speakingBtn = null;
+}
+function speak(text, btn){
   try{
     if(!('speechSynthesis' in window)) return;
-    window.speechSynthesis.cancel();
+    stopSpeaking();
     const u = new SpeechSynthesisUtterance(text);
     u.rate = 0.98;
+    u.onend = ()=>{ if(_speakingBtn===btn){ resetSpeakBtn(btn); _speakingBtn = null; } };
+    u.onerror = u.onend;
     window.speechSynthesis.speak(u);
+    _speakingBtn = btn;
+    setSpeakBtnPlaying(btn);
   }catch(e){}
 }
 function readAloudBtn(getText){
   const id = 'ra'+Math.random().toString(36).slice(2,8);
-  setTimeout(()=>{ const b=document.getElementById(id); if(b) b.onclick=()=>speak(getText()); }, 0);
+  setTimeout(()=>{
+    const b=document.getElementById(id);
+    if(!b) return;
+    b.dataset.playing = 'false';
+    b.onclick = ()=>{
+      if(b.dataset.playing==='true') stopSpeaking();
+      else speak(getText(), b);
+    };
+  }, 0);
   return '<button class="btn btn-sm btn-ghost" id="'+id+'" type="button">'+ic('speaker',15)+' Read this step aloud</button>';
 }
 function copyToClipboard(text, btnEl){
@@ -934,6 +1152,7 @@ function copyToClipboard(text, btnEl){
  * 4. STEP DEFINITIONS
  * ---------------------------------------------------------------- */
 const STEPS = [
+  {id:'objectives', lesson:'Before you begin', name:'Your objectives', icon:'flag'},
   {id:'welcome', lesson:'Before you begin', name:'Your group room', icon:'flag'},
   {id:'scenario', lesson:'Lesson 1', name:'Scenario briefing', icon:'cloud'},
   {id:'idea', lesson:'Lesson 1', name:'Your individual idea', icon:'sprout'},
@@ -941,6 +1160,7 @@ const STEPS = [
   {id:'submit', lesson:'Lesson 1', name:'Submit your draft', icon:'chart'},
   {id:'jigsaw', lesson:'Lesson 2', name:'Evidence jigsaw', icon:'globe'},
   {id:'wall', lesson:'Lesson 2', name:'Comparison wall', icon:'handshake'},
+  {id:'quickcheck', lesson:'Lesson 2', name:'Quick check', icon:'bolt'},
   {id:'consolidate', lesson:'Lesson 2', name:'Teacher consolidation', icon:'recycle'},
   {id:'revise', lesson:'Lesson 2', name:'Revise your plan', icon:'wave'},
   {id:'writing', lesson:'Lesson 3', name:'Individual response', icon:'pencil'},
@@ -954,21 +1174,26 @@ const ZONE_ICON = {
 
 function stepUnlocked(i){
   const g = g1();
-  if(i<=0) return true;
-  if(i===1) return true; // scenario always visible
-  if(i===2) return true; // idea
-  if(i===3) return true; // planner open throughout, locks after submit
-  if(i===4) return tokensTotal(currentDraftTokens())>0 || g.plan.versions.length>0;
-  if(i===5) return g.plan.versions.length>0; // jigsaw needs submission
-  if(i===6) return g.plan.versions.length>0;
+  if(i<=1) return true; // objectives, welcome
+  if(i===2) return true; // scenario always visible
+  if(i===3) return true; // idea
+  if(i===4) return true; // planner open throughout, locks after submit
+  if(i===5) return tokensTotal(currentDraftTokens())>0 || g.plan.versions.length>0;
+  if(i===6) return g.plan.versions.length>0; // jigsaw needs submission
   if(i===7) return g.plan.versions.length>0;
   if(i===8) return g.plan.versions.length>0;
-  if(i===9) return g.plan.versions.length>0; // writing can start after revise ideally, but not hard-gated
-  if(i===10) return g.individualWriting.some(w=>w.studentId==='you');
-  if(i===11) return g.reflections.some(r=>r.studentId==='you');
+  if(i===9) return g.plan.versions.length>0;
+  if(i===10) return g.plan.versions.length>0; // writing can start after revise ideally, but not hard-gated
+  if(i===11) return g.individualWriting.some(w=>w.studentId==='you');
+  if(i===12) return g.reflections.some(r=>r.studentId==='you');
   return true;
 }
 let draftTokens = null; // working buffer for the planner before a version is created
+let commentModal = null; // transient: {gid, groupName, strength, question} while the gallery-walk comment popup is open
+let dashboardUnlocked = false; // transient: teacher dashboard is PIN-gated and re-locks every time it's left or the page reloads
+let pinError = false; // transient: show "incorrect PIN" after a failed attempt
+let preGateView = 'start'; // transient: where Back on the PIN screen should return to
+let reportDraft = {name:'', groupNo:''}; // transient: report-gate name/group form buffer before "Continue" commits it
 function currentDraftTokens(){
   if(draftTokens) return draftTokens;
   const g=g1(); const last = latestPlan(g);
@@ -984,11 +1209,12 @@ function render(){
   document.getElementById('btnViewTeacher').setAttribute('aria-pressed', state.view==='dashboard');
   const main = document.getElementById('main');
   if(state.view==='start') main.innerHTML = renderStart();
-  else if(state.view==='dashboard') main.innerHTML = renderDashboard();
-  else main.innerHTML = renderJourney();
+  else if(state.view==='dashboard') main.innerHTML = dashboardUnlocked ? renderDashboard() : renderPinGate();
+  else main.innerHTML = state.reportDone ? renderJourney() : renderReportGate();
   main.classList.remove('fade-in'); void main.offsetWidth; main.classList.add('fade-in');
   renderXpBar();
   wireEvents();
+  startConsequenceTypewriters();
 }
 
 function applyA11y(){
@@ -997,6 +1223,7 @@ function applyA11y(){
   else if(state.theme==='light') document.documentElement.setAttribute('data-theme','light');
   else document.documentElement.removeAttribute('data-theme');
   if(typeof updateSoundBtn==='function') updateSoundBtn();
+  if(typeof updateNotesBtn==='function') updateNotesBtn();
 }
 
 /* ---- START SCREEN ---- */
@@ -1011,8 +1238,8 @@ function renderStart(){
     <div class="hero-art">${skylineArt({tone:'light'})}</div>
   </div>
   <div class="card">
-    <h3>Join Group 1</h3>
-    <p class="muted">This browser plays Group 1 live. The other seven groups are pre-filled with sample class data so the comparison wall and teacher dashboard have something to show you.</p>
+    <h3>Join a Group</h3>
+    <p class="muted">This browser plays your group live — you'll pick your name and group number next. The other seven groups are pre-filled with sample class data so the comparison wall and teacher dashboard have something to show you.</p>
     <button class="btn btn-primary btn-water" id="enterJourney" type="button">Enter the group room →</button>
   </div>
   <div class="card-flat">
@@ -1020,6 +1247,50 @@ function renderStart(){
     <p class="muted" style="margin-bottom:.8em">See participation, peer-feedback quality, revisions and the individual-writing review queue across all eight groups.</p>
     <button class="btn" id="enterDash" type="button">Open teacher dashboard →</button>
   </div>`;
+}
+
+/* ---- REPORT GATE — name + group number, shown once before the journey.
+ * Reuses the scenario banner's skyline art so the "report for duty" framing
+ * matches the Lesson 1 scenario briefing's visual language. The name and
+ * group number collected here follow the student through the whole lesson. */
+function renderReportGate(){
+  const nameVal = reportDraft.name || '';
+  const groupVal = reportDraft.groupNo || '';
+  const canContinue = !!nameVal.trim() && !!groupVal;
+  return `
+  <div class="scenario-banner" aria-hidden="true">${skylineArt({tone:'light'})}</div>
+  <div class="card fade-in" style="max-width:440px; margin:0 auto">
+    <div class="eyebrow">${ic('flag',14)} Adviser dossier</div>
+    <h2>Report for duty</h2>
+    <p class="muted">Before you enter the group room, confirm who you are. Your name and group number will follow you through the rest of the lesson.</p>
+    <label for="reportName">Your name</label>
+    <input id="reportName" type="text" placeholder="e.g. Marcus" value="${esc(nameVal)}" autocomplete="off">
+    <label for="reportGroup" style="margin-top:.8em; display:block">Your group number</label>
+    <select id="reportGroup">
+      <option value="" ${groupVal?'':'selected'} disabled>— Select your group —</option>
+      ${[1,2,3,4,5,6,7].map(n=>`<option value="${n}" ${String(groupVal)===String(n)?'selected':''}>Group ${n}</option>`).join('')}
+    </select>
+    <div class="btn-row" style="margin-top:1.1em">
+      <button class="btn btn-primary btn-water" id="reportContinue" type="button" ${canContinue?'':'disabled'}>Continue →</button>
+    </div>
+  </div>`;
+}
+
+/* Commits the report-gate name/group choice onto the live Group 1 data.
+ * Internal group ids ('1'..'8') are never touched — only the cosmetic
+ * .name field is swapped — because seeded groups already occupy "Group N"
+ * for n=2..8, and this avoids a duplicate displayed name without touching
+ * any id-based logic elsewhere (wallGroups, dashboard group lookups, etc). */
+function applyStudentIdentity(name, groupNo){
+  const liveGroup = g1();
+  const wantedName = 'Group '+groupNo;
+  if(liveGroup.name !== wantedName){
+    const other = Object.values(state.groups).find(gr=>gr.id!=='1' && gr.name===wantedName);
+    if(other) other.name = liveGroup.name; // give it the vacated label
+    liveGroup.name = wantedName;
+  }
+  const you = liveGroup.members.find(m=>m.id==='you');
+  if(you && name) you.name = name;
 }
 
 /* ---- JOURNEY (Group 1) ---- */
@@ -1065,26 +1336,43 @@ const ACCENT_VAR = {water:'var(--water)', food:'var(--food)', plum:'var(--plum)'
 function renderXpBar(){
   const bar = document.getElementById('xpbar');
   if(!bar) return;
-  if(state.view!=='journey'){ bar.hidden = true; return; }
+  if(state.view!=='journey' || !state.reportDone){ bar.hidden = true; return; }
   bar.hidden = false;
   const lesson = STEPS[state.step].lesson;
   const accent = ACCENT_VAR[LESSON_ACCENT[lesson]||'neutral'];
-  const pct = Math.round((state.step/(STEPS.length-1))*100);
   const badgeCount = (state.earnedBadges||[]).length;
+  // Your current role, shown only in the lesson it applies to — Lesson 1
+  // reflects roleL1, Lesson 2 reflects roleL2 once chosen.
+  const you = g1().members.find(m=>m.id==='you');
+  const activeRole = lesson==='Lesson 1' ? you.roleL1 : (lesson==='Lesson 2' ? you.roleL2 : null);
+  const roleBadge = activeRole ? `<span class="xp-title" style="color:${accent}">${ic(ROLE_ICON[activeRole]||'flag',14)} ${esc(activeRole)}</span>` : '';
+  // One tick per step, colored by that step's own lesson zone when reached —
+  // a smooth percentage fill made single-step moves easy to miss; discrete
+  // ticks make every step change visibly land, and the "n/total" label
+  // removes any doubt that something moved.
+  const segs = STEPS.map((s,i)=>{
+    const segAccent = ACCENT_VAR[LESSON_ACCENT[s.lesson]||'neutral'];
+    return `<span class="xp-seg ${i<=state.step?'filled':''} ${i===state.step?'current':''}" style="${i<=state.step?`background:${segAccent}`:''}" title="${esc(s.name)}"></span>`;
+  }).join('');
   bar.innerHTML = `
     <span class="xp-title" style="color:${accent}">${ic(ZONE_ICON[lesson]||'flag',14)} ${esc(LEVEL_TITLE[lesson]||'')}</span>
-    <span class="xp-track"><span class="xp-fill" style="width:${pct}%; background:${accent}"></span></span>
-    <span class="xp-badge-count">${ic('star',13)} ${badgeCount}/${BADGES.length}</span>
+    ${roleBadge}
+    <span class="xp-track" role="img" aria-label="Step ${state.step+1} of ${STEPS.length}">${segs}</span>
+    <span class="xp-step-label">${state.step+1}/${STEPS.length}</span>
+    <button class="xp-badge-count" id="xpBadgeCount" type="button" title="See what each star is for" aria-label="View achievements, ${badgeCount} of ${BADGES.length} earned">${ic('star',13)} ${badgeCount}/${BADGES.length}</button>
   `;
+  const xpBadgeBtn = document.getElementById('xpBadgeCount');
+  if(xpBadgeBtn) xpBadgeBtn.addEventListener('click', openAchvPanel);
 }
 
 function renderJourney(){
   const g = g1();
   const step = STEPS[state.step];
+  const accent = LESSON_ACCENT[step.lesson] || 'neutral';
   return `
   <div class="shell">
     <nav class="rail" aria-label="Journey phases">${renderRail()}</nav>
-    <div class="main">
+    <div class="main" data-accent="${accent}">
       ${renderStepBody(step.id, g)}
     </div>
   </div>`;
@@ -1096,6 +1384,7 @@ function roleLine(g){
 }
 
 function renderStepBody(id, g){
+  if(id==='objectives') return stepObjectives(g);
   if(id==='welcome') return stepWelcome(g);
   if(id==='scenario') return stepScenario(g);
   if(id==='idea') return stepIdea(g);
@@ -1103,12 +1392,85 @@ function renderStepBody(id, g){
   if(id==='submit') return stepSubmit(g);
   if(id==='jigsaw') return stepJigsaw(g);
   if(id==='wall') return stepWall(g);
+  if(id==='quickcheck') return stepQuickCheck(g);
   if(id==='consolidate') return stepConsolidate(g);
   if(id==='revise') return stepRevise(g);
   if(id==='writing') return stepWriting(g);
   if(id==='reflect') return stepReflect(g);
   if(id==='done') return stepDone(g);
   return '';
+}
+
+/* ---------------------------------------------------------------- *
+ * STAGED REVEAL — shows a sequence of content blocks one at a time
+ * (a "Continue" tap per block) instead of one long wall of text on
+ * first load. Each call site owns a unique key; progress persists
+ * in state.reveal so re-visiting a step doesn't re-hide what the
+ * student already saw. The real nav buttons (Back/Continue to the
+ * next step) only appear once every block has been revealed.
+ * ---------------------------------------------------------------- */
+function revealCount(key){ state.reveal = state.reveal || {}; return state.reveal[key] || 0; }
+function stagedReveal(key, blocks, navHtml){
+  const shown = Math.min(revealCount(key), blocks.length - 1);
+  const visible = blocks.slice(0, shown + 1).join('');
+  const more = shown < blocks.length - 1;
+  return visible + (more
+    ? `<div class="btn-row"><button class="btn btn-primary" data-reveal="${key}" type="button">Continue →</button></div>`
+    : navHtml);
+}
+
+/* CRITICAL consequence boxes type out character-by-character on first
+ * reveal only (keyed by plan version + index in state.typedConsequences),
+ * so re-visiting the step after it's been seen shows the text instantly —
+ * the suspense is a one-time beat, not a replay every render. */
+function startConsequenceTypewriters(){
+  document.querySelectorAll('[data-cons-type]').forEach(el=>{
+    const key = el.dataset.consType;
+    const full = el.dataset.full || '';
+    if(prefersReducedMotion()){
+      el.textContent = full;
+      state.typedConsequences = state.typedConsequences || {};
+      state.typedConsequences[key] = true;
+      saveState();
+      return;
+    }
+    el.classList.add('typing');
+    let i = 0;
+    const timer = setInterval(()=>{
+      el.textContent += full.charAt(i);
+      i++;
+      if(i>=full.length){
+        clearInterval(timer);
+        el.classList.remove('typing');
+        state.typedConsequences = state.typedConsequences || {};
+        state.typedConsequences[key] = true;
+        saveState();
+      }
+    }, 22);
+  });
+}
+
+/* Simulated pop-up for "Comment on this plan" — a real modal in the page
+ * rather than window.prompt(), which some embedded/preview contexts block
+ * or silently no-op, so nothing visibly happens when it's used. */
+function renderCommentModal(g){
+  if(!commentModal) return '';
+  return `
+  <div class="modal-overlay" id="commentModalOverlay">
+    <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="commentModalTitle">
+      <button class="modal-close" id="commentModalClose" type="button" aria-label="Close">${ic('close',16)}</button>
+      <div class="eyebrow">Comment on this plan</div>
+      <h3 id="commentModalTitle">${esc(commentModal.groupName)}</h3>
+      <label for="modalStrength">One evidence-supported strength in their plan</label>
+      <textarea id="modalStrength" placeholder="e.g. Strong spread across the Four Taps, so no tap is left exposed...">${esc(commentModal.strength||'')}</textarea>
+      <label for="modalQuestion">A probing question for them</label>
+      <textarea id="modalQuestion" placeholder="e.g. What trade-off moves if the dry spell runs longer than expected?">${esc(commentModal.question||'')}</textarea>
+      <div class="btn-row" style="margin-top:.9em">
+        <button class="btn" id="commentModalCancel" type="button">Cancel</button>
+        <button class="btn btn-primary btn-water" id="commentModalSubmit" type="button" ${(!commentModal.strength||!commentModal.strength.trim()||!commentModal.question||!commentModal.question.trim())?'disabled':''}>Post comment</button>
+      </div>
+    </div>
+  </div>`;
 }
 
 function navButtons(prev, next, nextDisabled, nextLabel){
@@ -1118,45 +1480,78 @@ function navButtons(prev, next, nextDisabled, nextLabel){
   </div>`;
 }
 
-function stepWelcome(g){
+function stepObjectives(g){
   return `
-  <div class="card">
+  <div class="card fade-in">
     <div class="eyebrow">Before you begin</div>
-    <h2>Welcome to Group 1</h2>
-    <p>You are one of four policy advisers. Roles rotate each lesson so no one owns the plan alone — everyone still contributes evidence, questions a peer, and helps improve the final judgement.</p>
-    <table style="margin:1em 0"><thead><tr><th>Member</th><th>Lesson 1</th><th>Lesson 2</th><th>Lesson 3</th></tr></thead><tbody>
-    ${g.members.map(m=>`<tr><td>${esc(m.name)}${m.id==='you'?' <span class="badge badge-water">You</span>':''}</td><td>${m.roleL1}</td><td>${m.roleL2}</td><td>${m.roleL3}</td></tr>`).join('')}
-    </tbody></table>
-    <p class="muted">Closed group, teacher-moderated. First attempts are never publicly ranked — the point of Lesson 1 is to surface your honest starting assumptions, not to be right yet.</p>
-    ${readAloudBtn(()=>'Welcome to Group 1. You are one of four policy advisers. Roles rotate each lesson.')}
-  </div>
-  <div class="card-flat">
-    <h4 style="margin-top:0">Operational roles</h4>
-    <div class="hotspot-grid">
-      ${ROLES.map(r=>`<div class="card-flat" style="margin-bottom:0"><strong>${esc(r)}</strong><p class="muted" style="margin:.3em 0 0; font-size:.86rem">${esc(ROLE_BLURBS[r])}</p></div>`).join('')}
-    </div>
+    <h2>Your objectives</h2>
+    <p>At the end of this lesson, I can...</p>
+    <ul style="margin:0 0 1em; padding-left:1.3em; line-height:1.55">
+      <li style="margin-bottom:.5em">Justify a trade-off between prioritising water or food security, using evidence from real local and regional precedents.</li>
+      <li style="margin-bottom:.5em">Explain how the Four National Taps and Singapore Food Story 2 strategies build resilience against climate and supply shocks.</li>
+      <li style="margin-bottom:.5em">Construct a resilience plan under resource constraints and identify the single biggest risk in that plan.</li>
+      <li style="margin-bottom:.5em">Use the Claim–Evidence–Limitation–Judgement (CELJ) frame to make and defend a reasoned written judgement.</li>
+      <li style="margin-bottom:0">Revise my position in light of new evidence and peer feedback, and explain what changed and why.</li>
+    </ul>
+    ${readAloudBtn(()=>'At the end of this lesson, I can: justify a trade-off between prioritising water or food security using real evidence; explain how the Four National Taps and Singapore Food Story 2 strategies build resilience; construct a resilience plan and identify its biggest risk; use the claim, evidence, limitation, judgement frame to defend a written judgement; and revise my position in light of new evidence and peer feedback.')}
   </div>
   ${navButtons(null,1)}`;
 }
 
+function stepWelcome(g){
+  const you = g.members.find(m=>m.id==='you');
+  const b1 = `
+  <div class="card fade-in">
+    <div class="eyebrow">Before you begin</div>
+    <h2>Welcome, ${esc(you.name)} — ${esc(g.name)}</h2>
+    <p>You are one of four policy advisers. Closed group, teacher-moderated. First attempts are never publicly ranked — the point of Lesson 1 is to surface your honest starting assumptions, not to be right yet.</p>
+    ${readAloudBtn(()=>`Welcome to ${g.name}. You are one of four policy advisers.`)}
+  </div>`;
+  const b2 = `
+  <div class="card-flat fade-in">
+    <h4 style="margin-top:0">Operational roles</h4>
+    <div class="hotspot-grid">
+      ${ROLES.map(r=>`<div class="card-flat role-card" style="margin-bottom:0"><strong class="icon-inline">${ic(ROLE_ICON[r],16)} ${esc(r)}</strong><p class="muted" style="margin:.3em 0 0; font-size:.86rem">${esc(ROLE_BLURBS[r])}</p></div>`).join('')}
+    </div>
+    ${dnote('Design note — safe, low-stakes space','Roles and norms are set before any work is judged, and first attempts are explicitly framed as diagnostic rather than graded. That sequencing is deliberate: it protects a psychologically safe space before asking anyone to be wrong in front of peers.')}
+  </div>`;
+  const b3 = `
+  <div class="card fade-in">
+    <h4 style="margin-top:0">Choose your role for Lesson 1</h4>
+    <p class="muted">Roles rotate across the three lessons so no one owns the plan alone — everyone still contributes evidence, questions a peer, and helps improve the final judgement. Pick which role you'll hold for Lesson 1.</p>
+    <label for="roleL1Select" class="visually-hidden">Your role for Lesson 1</label>
+    <select id="roleL1Select">
+      <option value="" ${!you.roleL1?'selected':''} disabled>— Select your role —</option>
+      ${ROLES.map(r=>`<option value="${esc(r)}" ${you.roleL1===r?'selected':''}>${esc(r)}</option>`).join('')}
+    </select>
+    <div class="btn-row" style="margin-top:.9em">
+      <button class="btn btn-primary" id="confirmRoleL1" type="button" ${you.roleL1?'disabled':''}>Confirm role</button>
+      ${you.roleL1?`<span class="badge badge-good">Confirmed: ${esc(you.roleL1)}</span>`:''}
+    </div>
+  </div>`;
+  return stagedReveal('welcome', [b1,b2,b3], navButtons(0,2,!you.roleL1));
+}
+
 function stepScenario(g){
-  return `
-  <div class="scenario-banner" aria-hidden="true">${skylineArt({tone:'light'})}</div>
-  <div class="card">
+  const banner = `<div class="scenario-banner" aria-hidden="true">${skylineArt({tone:'light'})}</div>`;
+  const b1 = `
+  <div class="card fade-in">
     <div class="eyebrow">Lesson 1 · Scenario</div>
     <h2>Singapore 2040: Dry Spell and Supply Shock</h2>
     <p>Your group has been called in as policy advisers. A longer, drier dry season has strained the region's water supply, and a separate shock has just disrupted one of Singapore's food import lines. You have three lessons to propose, defend and revise a 20-year resilience plan across water and food.</p>
     ${readAloudBtn(()=>'Singapore 2040. Your group has been called in as policy advisers. A longer, drier dry season has strained the region\'s water supply, and a separate shock has disrupted one of Singapore\'s food import lines.')}
-  </div>
-  <h3 style="margin-top:0">Two precedents to read first</h3>
+  </div>`;
+  const b2 = `
+  <h3 style="margin-top:0" class="fade-in">Two precedents to read first</h3>
   ${PRECEDENTS.map(p=>`
-    <div class="card-flat">
+    <div class="card-flat fade-in">
       <span class="badge ${p.tag==='water'?'badge-water':'badge-food'}">${ic(p.tag==='water'?'drop':'basket',13)} ${p.tag==='water'?'Water':'Food'}</span>
       <h4 style="margin-top:.5em">${esc(p.title)}</h4>
       <p style="margin-bottom:0">${p.body}</p>
-    </div>`).join('')}
-  <div class="card-flat"><p style="margin-bottom:0"><strong>Note the difference:</strong> the reservoir stress is a climate-linked precedent; the chicken export restriction is a trade decision, not a climate event. Keep that distinction in mind as you justify your plan.</p></div>
-  ${navButtons(0,2)}`;
+    </div>`).join('')}`;
+  const b3 = `
+  <div class="card-flat fade-in"><p style="margin-bottom:0"><strong>Note the difference:</strong> the reservoir stress is a climate-linked precedent; the chicken export restriction is a trade decision, not a climate event. Keep that distinction in mind as you justify your plan.</p></div>`;
+  return banner + stagedReveal('scenario', [b1,b2,b3], navButtons(1,3));
 }
 
 function stepIdea(g){
@@ -1178,7 +1573,8 @@ function stepIdea(g){
     <h4>Your groupmates' silent posts</h4>
     ${others.map(o=>`<div class="comment"><div class="meta">${esc(g.members.find(m=>m.id===o.studentId).name)}</div>${esc(o.text)}</div>`).join('')}
   </div>
-  ${navButtons(1,3)}`;
+  ${dnote('Design note — problem before principle','Everyone commits a private first guess before any group talk or instruction. The plan that follows is built on real individual thinking, not on deferring to the loudest voice or guessing at the "right" answer the teacher wants.')}
+  ${navButtons(2,4, !(mine && mine.text && mine.text.trim()))}`;
 }
 
 function stepPlanner(g){
@@ -1186,6 +1582,9 @@ function stepPlanner(g){
   const total = tokensTotal(t);
   const over = total>100;
   const locked = g.plan.versions.length>0 && !state.revising;
+  const riskVal = (latestPlan(g)&&!state.revising)?latestPlan(g).risk:(state.draftRisk||'');
+  const justVal = (latestPlan(g)&&!state.revising)?latestPlan(g).justification:(state.draftJust||'');
+  const plannerDisabled = locked ? false : (over || total===0 || !riskVal.trim() || !justVal.trim());
   return `
   <div class="card">
     <div class="eyebrow">Lesson 1 · Group resource plan</div>
@@ -1212,7 +1611,8 @@ function stepPlanner(g){
     <textarea id="justInput" placeholder="We prioritised...">${esc((latestPlan(g)&&!state.revising)?latestPlan(g).justification:(state.draftJust||''))}</textarea>
   </div>
   <div class="card-flat"><p style="margin-bottom:0"><strong>Teacher prompts to consider:</strong> What does this token mean? Who in your group hasn't contributed yet? What evidence tests your assumption?</p></div>
-  ${navButtons(2,4,false,locked?'Continue →':'Continue to submission →')}`;
+  ${dnote('Design note — supported generation, not told answers','Role prompts and a resource ceiling scaffold the plan, but the canonical Four-Taps/Food-Story-2 strategy explanations are deliberately withheld until after submission. Groups commit to a position before meeting the "correct" framework, keeping the try-first sequence intact.')}
+  ${navButtons(3,5,plannerDisabled,locked?'Continue →':'Continue to submission →')}`;
 }
 
 function stepSubmit(g){
@@ -1230,7 +1630,7 @@ function stepSubmit(g){
       </div>
       ${total===0?'<p class="muted" style="margin-top:.6em">Allocate at least some tokens on the planner step first.</p>':''}
     </div>
-    ${navButtons(3,null)}`;
+    ${navButtons(4,null)}`;
   }
   const consequences = evaluateConsequences(plan.tokens);
   return `
@@ -1245,15 +1645,26 @@ function stepSubmit(g){
     <div class="eyebrow"><span class="icon-inline">${ic('signal',15)} Consequence transmission</span></div>
     <h3>Year 2040: the shock hits</h3>
     <p class="muted" style="margin-top:-.3em">This reads your allocation and narrates what it would mean under the scenario — it's feedback for your revision, not a score. There is no single correct allocation.</p>
-    ${consequences.map(c=>`<div class="hotspot ${c.sev==='danger'?'food':(c.sev==='ok'?'':'water')}" style="${c.sev==='danger'?'border-color:var(--warn); background:var(--warn-soft)':''}">
-      <strong style="${c.sev==='danger'?'color:var(--warn)':''}">${c.sev==='danger'?'CRITICAL':(c.sev==='warning'?'WATCH':'HOLDING')}</strong> — ${esc(c.text)}
-    </div>`).join('')}
+    ${consequences.map((c,i)=>{
+      const key = `${plan.version}-${i}`;
+      const already = !!(state.typedConsequences||{})[key];
+      const label = c.sev==='danger'?'CRITICAL':(c.sev==='warning'?'WATCH':'HOLDING');
+      const danger = c.sev==='danger';
+      const textHtml = (danger && !already)
+        ? `<span class="cons-type" data-cons-type="${key}" data-full="${esc(c.text)}"></span>`
+        : esc(c.text);
+      return `<div class="hotspot ${danger?'food':(c.sev==='ok'?'':'water')}" style="${danger?'border-color:var(--warn); background:var(--warn-soft)':''}">
+      <strong style="${danger?'color:var(--warn)':''}">${label}</strong> — ${textHtml}
+    </div>`;
+    }).join('')}
   </div>
-  ${navButtons(3,5)}`;
+  ${navButtons(4,6)}`;
 }
 
 function stepJigsaw(g){
+  const you = g.members.find(m=>m.id==='you');
   const assigned = g.jigsaw.memberSet && g.jigsaw.memberSet.you;
+  const needsRoleL2 = STEPS[state.step] && STEPS[state.step].id==='jigsaw' && !you.roleL2;
   return `
   <div class="card">
     <div class="eyebrow">Lesson 2 · Evidence jigsaw</div>
@@ -1264,14 +1675,46 @@ function stepJigsaw(g){
       <button class="btn ${assigned==='food'?'btn-food':''}" data-jig="food" type="button">${ic('sprout',18)} Food evidence set</button>
     </div>
     ${assigned ? EVIDENCE_SETS[assigned].map(e=>`
-      <div class="evidence-card"><strong>${esc(e.title)}</strong><p style="margin:.4em 0 0">${e.body}</p><span class="src">${esc(e.src)}</span></div>
+      <details class="evidence-card ${assigned}">
+        <summary>
+          <span class="ev-summary-text"><strong class="icon-inline">${ic(assigned==='water'?'drop':'sprout',15)} ${esc(e.title)}</strong><span class="ev-gist">${esc(e.gist)}</span></span>
+          <span class="disc-chev" aria-hidden="true">${ic('chevron',16)}</span>
+        </summary>
+        <p style="margin:.6em 0 0">${e.body}</p><span class="src">${esc(e.src)}</span>
+      </details>
     `).join('') : '<p class="muted">Pick a set above to see its evidence cards.</p>'}
     ${assigned?`
     <label for="jigNotes" style="margin-top:.8em; display:block">Notes for explaining this to your group</label>
     <textarea id="jigNotes" placeholder="The key point I'll explain is...">${esc(g.jigsaw.notes||'')}</textarea>
     <div class="btn-row"><button class="btn btn-sm" id="saveJigNotes" type="button">Save notes</button></div>`:''}
   </div>
-  ${navButtons(4,6)}`;
+  ${dnote('Design note — social construction of knowledge','Each member owns one evidence set and must teach it back rather than everyone reading everything. Understanding is built by explaining to peers, not by passively receiving the same content twice.')}
+  ${navButtons(5,7)}
+  ${needsRoleL2 ? renderRoleL2Modal(you) : ''}`;
+}
+
+/* Lesson-2 role re-assignment — appears as a non-dismissible pop-up the
+ * moment a student reaches the jigsaw step without yet having a Lesson 2
+ * role. Self-gates off persisted data (you.roleL2), not a transient flag,
+ * so it reappears correctly on reload and disappears for good once set.
+ * The Lesson 1 role is shown as a disabled option, not a selectable one. */
+function renderRoleL2Modal(you){
+  return `
+  <div class="modal-overlay" id="roleL2Overlay">
+    <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="roleL2Title">
+      <div class="eyebrow">Lesson 2 · New role</div>
+      <h3 id="roleL2Title">Choose your role for Lesson 2</h3>
+      <p class="muted">Roles rotate each lesson. Your Lesson 1 role (${esc(you.roleL1)}) isn't available again this round.</p>
+      <label for="roleL2Select" class="visually-hidden">Your role for Lesson 2</label>
+      <select id="roleL2Select">
+        <option value="" selected disabled>— Select your role —</option>
+        ${ROLES.map(r=>`<option value="${esc(r)}" ${r===you.roleL1?'disabled':''}>${esc(r)}${r===you.roleL1?' (already held in Lesson 1)':''}</option>`).join('')}
+      </select>
+      <div class="btn-row" style="margin-top:.9em">
+        <button class="btn btn-primary btn-food" id="confirmRoleL2" type="button" disabled>Confirm role</button>
+      </div>
+    </div>
+  </div>`;
 }
 
 function wallGroups(){
@@ -1313,9 +1756,20 @@ function stepWall(g){
     <h3 style="margin-top:1.1em">Comments you've received</h3>
     ${g.commentsReceived.length? g.commentsReceived.map(c=>`<div class="comment q"><div class="meta">From ${esc(c.from)} · ${fmtDate(c.at)}</div><strong>Strength:</strong> ${esc(c.strength)}<br><strong>Question:</strong> ${esc(c.question)}</div>`).join('') : '<p class="muted">None yet.</p>'}
   </div>
+  ${dnote('Design note — critique before correction','Plans are compared against classmates\' choices before the teacher explains the "correct" framework in the next step. Seeing where plans disagree, and why, makes the upcoming direct instruction land on a question students already have.')}
+  ${g.commentsGiven.length<2?`<p class="muted" style="margin:.6em 0 0">Comment on ${2-g.commentsGiven.length} more group${2-g.commentsGiven.length>1?'s':''} before continuing.</p>`:''}
+  ${navButtons(6,8,g.commentsGiven.length<2)}
+  ${renderCommentModal(g)}`;
+}
+
+function stepQuickCheck(g){
+  return `
+  <div class="card">
+    <div class="eyebrow food">Lesson 2 · Quick check</div>
+    <h2>Four Taps &amp; Food Story 2</h2>
+    <p class="muted">A short self-check before the teacher consolidation — see what you already know, and what's worth listening out for next.</p>
+  </div>
   <div class="card" id="quickCheckCard">
-    <div class="eyebrow food">Quick check</div>
-    <h3>Four Taps &amp; Food Story 2</h3>
     ${QUICK_CHECK.map((qc,qi)=>`
       <div class="card-flat">
         <p style="margin-bottom:.6em"><strong>${qi+1}.</strong> ${esc(qc.q)}</p>
@@ -1324,7 +1778,8 @@ function stepWall(g){
       </div>`).join('')}
     <p id="quizScoreLine" class="mono muted"></p>
   </div>
-  ${navButtons(5,7)}`;
+  ${dnote('Design note — retrieval before instruction','Splitting this out from the gallery walk gives the self-check its own uninterrupted moment — a quick, low-stakes retrieval attempt right before the teacher consolidation explains the framework properly.')}
+  ${navButtons(7,9,!g.quickCheck.attempted)}`;
 }
 
 function stepConsolidate(g){
@@ -1337,19 +1792,20 @@ function stepConsolidate(g){
   </div>
   <h3>Water — Four National Taps</h3>
   <div class="hotspot-grid">
-  ${CONSOLIDATION.taps.map(t=>`<div class="hotspot water"><strong class="icon-inline">${ic('drop',17)} ${esc(t.name)}</strong><p style="margin:.3em 0 0">${t.note}</p></div>`).join('')}
+  ${CONSOLIDATION.taps.map(t=>`<details class="hotspot water"><summary><strong class="icon-inline">${ic('drop',17)} ${esc(t.name)}</strong><span class="disc-chev" aria-hidden="true">${ic('chevron',16)}</span></summary><p style="margin:.5em 0 0">${t.note}</p></details>`).join('')}
   </div>
   <h3 style="margin-top:1.2em">Food — Singapore Food Story 2 pillars</h3>
   <div class="hotspot-grid">
-  ${CONSOLIDATION.foodStory.map(t=>`<div class="hotspot food"><strong class="icon-inline">${ic('sprout',17)} ${esc(t.name)}</strong><p style="margin:.3em 0 0">${t.note}</p></div>`).join('')}
+  ${CONSOLIDATION.foodStory.map(t=>`<details class="hotspot food"><summary><strong class="icon-inline">${ic('sprout',17)} ${esc(t.name)}</strong><span class="disc-chev" aria-hidden="true">${ic('chevron',16)}</span></summary><p style="margin:.5em 0 0">${t.note}</p></details>`).join('')}
   </div>
   <div class="card-flat" style="margin-top:1em"><p style="margin-bottom:0"><em>Historical note:</em> an earlier approach described three food “baskets.” Food Story 2 regroups the same thinking into the four pillars above (Lim, 2021; SFA, n.d.-a).</p></div>
-  ${navButtons(6,8)}`;
+  ${dnote('Design note — just-in-time direct instruction','This is the first point in the sequence where the canonical framework is actually taught — placed after the group has already committed to a plan and seen other groups\' plans, not before, so direct instruction answers a question students have already formed.')}
+  ${navButtons(8,10)}`;
 }
 
 function stepRevise(g){
   const v1 = firstPlan(g);
-  if(!v1) return `<div class="card"><p>Submit your Lesson 1 draft first.</p></div>${navButtons(7,null)}`;
+  if(!v1) return `<div class="card"><p>Submit your Lesson 1 draft first.</p></div>${navButtons(9,null)}`;
   const t = currentDraftTokens();
   const total = tokensTotal(t);
   const over = total>100;
@@ -1376,7 +1832,9 @@ function stepRevise(g){
       <button class="btn btn-primary btn-water" id="submitRevision" type="button" ${over||total===0?'disabled':''}>Submit revision</button>
     </div>
   </div>
-  ${navButtons(7,9)}`;
+  ${dnote('Design note — revision as evidence of learning','Version 1 is never overwritten — it stays visible so a changed allocation is visible proof that consolidation and peer feedback actually moved the group\'s thinking, not just a second guess.')}
+  ${!alreadyRevised?`<p class="muted" style="margin:.6em 0 0">Submit your revision before continuing.</p>`:''}
+  ${navButtons(9,11,!alreadyRevised)}`;
 }
 
 function stepWriting(g){
@@ -1393,10 +1851,10 @@ function stepWriting(g){
     <label class="toggle"><input type="checkbox" id="frameToggle" ${showFrame?'checked':''}> Show claim–evidence–limitation–judgement frame (optional)</label>
     ${showFrame?`
     <div style="margin-top:.8em">
-      <span class="frame-pill">Claim</span> ${esc(CELJ_PROMPTS.claim)}<br>
-      <span class="frame-pill" style="margin-top:.4em">Evidence</span> ${esc(CELJ_PROMPTS.evidence)}<br>
-      <span class="frame-pill" style="margin-top:.4em">Limitation</span> ${esc(CELJ_PROMPTS.limitation)}<br>
-      <span class="frame-pill" style="margin-top:.4em">Judgement</span> ${esc(CELJ_PROMPTS.judgement)}
+      <span class="frame-pill claim">${ic('flag',12)} Claim</span> ${esc(CELJ_PROMPTS.claim)}<br>
+      <span class="frame-pill evidence" style="margin-top:.4em">${ic('signal',12)} Evidence</span> ${esc(CELJ_PROMPTS.evidence)}<br>
+      <span class="frame-pill limitation" style="margin-top:.4em">${ic('cloud',12)} Limitation</span> ${esc(CELJ_PROMPTS.limitation)}<br>
+      <span class="frame-pill judgement" style="margin-top:.4em">${ic('trophy',12)} Judgement</span> ${esc(CELJ_PROMPTS.judgement)}
     </div>`:''}
   </div>
   <div class="card">
@@ -1426,9 +1884,10 @@ function stepWriting(g){
   </div>
   <div class="card-flat">
     <h4>LORMS descriptors (what your teacher is looking for)</h4>
-    <table><tbody>${LORMS.map(l=>`<tr><td><strong>${l.level}</strong><br><span class="muted">${l.band}</span></td><td>${l.desc}</td></tr>`).join('')}</tbody></table>
+    <table><tbody>${LORMS.map((l,i)=>`<tr><td><span class="lvl-dots" aria-hidden="true">${'●'.repeat(i+1)}${'○'.repeat(LORMS.length-1-i)}</span> <strong>${l.level}</strong><br><span class="muted">${l.band}</span></td><td>${l.desc}</td></tr>`).join('')}</tbody></table>
   </div>
-  ${navButtons(8,10, !mine)}`;
+  ${dnote('Design note — layered writing support, teacher as final judge','Sentence frames, the rubric shown up front, and a coach that only asks questions all scaffold the writing without replacing the teacher. EdCafe is explicitly barred from supplying citations, model answers or a grade — judgement stays with the teacher.')}
+  ${navButtons(10,12, !(mine && mine.text && mine.text.trim()))}`;
 }
 
 function stepReflect(g){
@@ -1443,7 +1902,8 @@ function stepReflect(g){
     <div class="btn-row"><button class="btn btn-primary" id="saveReflect" type="button">${mine?'Update reflection':'Submit reflection'}</button></div>
   </div>
   <div class="journey-map">scenario → individual idea → group plan → submission → jigsaw → comparison → revision → individual writing → <b>reflection</b></div>
-  ${navButtons(9,11, !mine)}`;
+  ${dnote('Design note — metacognitive close','The prompt deliberately points back at the Lesson 1 silent idea, so the object of reflection is the student\'s own thinking and how it changed — not just a recap of the content.')}
+  ${navButtons(11,13, !(mine && mine.text && mine.text.trim()))}`;
 }
 
 function stepDone(g){
@@ -1458,7 +1918,7 @@ function stepDone(g){
   </div>
   <div class="card">
     <div class="eyebrow">Complete</div>
-    <h2>Nice work, Group 1</h2>
+    <h2>Nice work, ${esc(g.name)}</h2>
     <p>Here's a summary of what you produced across the three lessons.</p>
     <table><tbody>
       <tr><td>Plan versions</td><td>${g.plan.versions.length}</td></tr>
@@ -1484,8 +1944,7 @@ function stepDone(g){
       }).join('')}
     </div>
   </div>
-  ${navButtons(10,null)}
-  <div class="btn-row"><button class="btn" id="goDashFromDone" type="button">View the teacher dashboard →</button></div>`;
+  ${navButtons(12,null)}`;
 }
 
 /* ---------------------------------------------------------------- *
@@ -1499,6 +1958,28 @@ const T_TABS = [
   {id:'usability', name:'Usability & pilot'},
   {id:'settings', name:'Settings'},
 ];
+
+/* PIN-gated entry to the teacher dashboard — re-locks every time it's left
+ * or the page reloads (dashboardUnlocked is a transient, not persisted,
+ * variable), so a student clicking "Teacher dashboard" or reloading mid-
+ * session never lands straight on every group's plans and writing. */
+function renderPinGate(){
+  return `
+  <div class="card" style="max-width:420px; margin:2em auto">
+    <div class="eyebrow">${ic('lock',14)} Teacher dashboard</div>
+    <h2>Enter PIN to continue</h2>
+    <p class="muted">This view shows every group's plans, writing and AI-coach logs — keep it to teacher use.</p>
+    <label for="pinInput" class="visually-hidden">PIN</label>
+    <input id="pinInput" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off"
+      placeholder="••••" aria-invalid="${pinError?'true':'false'}"
+      style="font-family:var(--font-mono); font-size:1.5rem; letter-spacing:.5em; text-align:center; width:100%; padding:.55em .4em; border-radius:9px; border:1.5px solid ${pinError?'var(--warn)':'var(--line)'}; background:var(--surface-2); color:var(--ink)">
+    ${pinError?`<p style="color:var(--warn); margin-top:.6em; margin-bottom:0"><strong>Incorrect PIN.</strong> Ask your teacher for the code.</p>`:''}
+    <div class="btn-row" style="margin-top:1.1em">
+      <button class="btn" id="pinCancel" type="button">← Back</button>
+      <button class="btn btn-primary" id="pinSubmit" type="button">Unlock</button>
+    </div>
+  </div>`;
+}
 
 function renderDashboard(){
   const tabs = T_TABS.map(t=>`<button role="tab" aria-selected="${state.tTab===t.id}" data-ttab="${t.id}" type="button">${t.name}</button>`).join('');
@@ -1667,6 +2148,7 @@ function tabSettings(){
     <h3>About this build</h3>
     <p>This is a self-contained, offline-capable demonstration of the group's technical design (hub, planner, submission, comparison wall, AI coach, teacher dashboard). All data lives in <strong>this browser's local storage only</strong> — nothing is sent anywhere.</p>
     <p class="muted">For a real multi-device classroom pilot, the planner, wall and dashboard would need a shared data layer (e.g. a small shared database, Google Sheets, or your school's SLS) so every group's device updates the same teacher view — noted here as a known constraint of this offline-deliverable version, consistent with the design brief's low-tech fallback principle.</p>
+    ${dnote('Design note — graceful degradation','A design spec should hold up when the tech fails, not just when it works perfectly. This build runs with zero network calls and a printable fallback for every graded step, so a Wi-Fi outage costs convenience, not the lesson.')}
   </div>
   <div class="card">
     <h3>Export class data</h3>
@@ -1686,6 +2168,7 @@ function tabSettings(){
  * ---------------------------------------------------------------- */
 function goto(step){
   narratorClose();
+  stopSpeaking();
   state.step = step; saveState(); render(); window.scrollTo({top:0,behavior:'smooth'});
   const id = STEPS[step] && STEPS[step].id;
   if(id) narratorFire(id);
@@ -1694,17 +2177,91 @@ function goto(step){
 function wireEvents(){
   const main = document.getElementById('main');
 
+  // teacher-dashboard PIN gate
+  const pinInput = main.querySelector('#pinInput');
+  const pinSubmit = main.querySelector('#pinSubmit');
+  const pinCancel = main.querySelector('#pinCancel');
+  if(pinSubmit && pinInput){
+    const tryUnlock = ()=>{
+      if((pinInput.value||'').trim()==='2040'){ dashboardUnlocked = true; pinError = false; render(); }
+      else { pinError = true; render(); }
+    };
+    pinSubmit.addEventListener('click', tryUnlock);
+    pinInput.addEventListener('keydown', e=>{ if(e.key==='Enter') tryUnlock(); });
+    pinInput.focus();
+  }
+  if(pinCancel) pinCancel.addEventListener('click', ()=>{ state.view = preGateView || 'start'; pinError = false; saveState(); render(); });
+
+  // report gate — name + group number, collected once before the journey
+  const reportName = main.querySelector('#reportName');
+  const reportGroup = main.querySelector('#reportGroup');
+  const reportContinue = main.querySelector('#reportContinue');
+  if(reportContinue){
+    const syncReportBtn = ()=>{ reportContinue.disabled = !(reportDraft.name||'').trim() || !reportDraft.groupNo; };
+    if(reportName) reportName.addEventListener('input', ()=>{ reportDraft.name = reportName.value; syncReportBtn(); });
+    if(reportGroup) reportGroup.addEventListener('change', ()=>{ reportDraft.groupNo = reportGroup.value; syncReportBtn(); });
+    reportContinue.addEventListener('click', ()=>{
+      applyStudentIdentity(reportDraft.name.trim(), reportDraft.groupNo);
+      state.reportDone = true;
+      saveState(); render();
+    });
+    if(reportName) reportName.focus();
+  }
+
+  // welcome — Lesson 1 role picker
+  const confirmRoleL1 = main.querySelector('#confirmRoleL1');
+  if(confirmRoleL1) confirmRoleL1.addEventListener('click', ()=>{
+    const sel = main.querySelector('#roleL1Select');
+    if(!sel || !sel.value) return;
+    g1().members.find(m=>m.id==='you').roleL1 = sel.value;
+    saveState(); render();
+  });
+
+  // jigsaw — Lesson 2 role re-assignment pop-up (non-dismissible by design:
+  // a second role choice is mandatory, so there's no close/cancel/backdrop)
+  const roleL2Select = main.querySelector('#roleL2Select');
+  const confirmRoleL2 = main.querySelector('#confirmRoleL2');
+  if(roleL2Select && confirmRoleL2){
+    roleL2Select.addEventListener('change', ()=>{ confirmRoleL2.disabled = !roleL2Select.value; });
+    confirmRoleL2.addEventListener('click', ()=>{
+      if(!roleL2Select.value) return;
+      g1().members.find(m=>m.id==='you').roleL2 = roleL2Select.value;
+      saveState(); render();
+    });
+  }
+
+  main.querySelectorAll('[data-reveal]').forEach(b=>b.addEventListener('click', ()=>{
+    const key = b.dataset.reveal;
+    state.reveal = state.reveal || {};
+    state.reveal[key] = (state.reveal[key]||0) + 1;
+    saveState(); render();
+  }));
   main.querySelectorAll('[data-goto]').forEach(b=>b.addEventListener('click', ()=>goto(Number(b.dataset.goto))));
   main.querySelectorAll('[data-step]').forEach(b=>b.addEventListener('click', ()=>{ if(!b.disabled) goto(Number(b.dataset.step)); }));
 
   const enterJourney = main.querySelector('#enterJourney');
   if(enterJourney) enterJourney.addEventListener('click', ()=>{ state.view='journey'; state.step=0; saveState(); render(); narratorFire('welcome'); });
   const enterDash = main.querySelector('#enterDash');
-  if(enterDash) enterDash.addEventListener('click', ()=>{ state.view='dashboard'; saveState(); render(); });
-  const goDashFromDone = main.querySelector('#goDashFromDone');
-  if(goDashFromDone) goDashFromDone.addEventListener('click', ()=>{ state.view='dashboard'; saveState(); render(); });
+  if(enterDash) enterDash.addEventListener('click', ()=>{ preGateView = 'start'; state.view='dashboard'; saveState(); render(); });
 
   // token inputs (planner + revise)
+  // the planner's own "Continue" button (data-goto="5") requires 100 RU
+  // allocated AND both the risk and justification fields filled — these
+  // fields update via plain 'input' listeners below (not a full render,
+  // to keep cursor position), so this button's disabled state has to be
+  // kept in sync by hand rather than recomputed on the next render.
+  const plannerNavBtn = main.querySelector('button[data-goto="5"]');
+  const riskInputEl = main.querySelector('#riskInput');
+  const justInputEl = main.querySelector('#justInput');
+  function syncPlannerNav(){
+    if(!plannerNavBtn) return;
+    const lockedNow = g1().plan.versions.length>0 && !state.revising;
+    if(lockedNow){ plannerNavBtn.disabled = false; return; }
+    const total = tokensTotal(currentDraftTokens());
+    const riskVal = riskInputEl ? riskInputEl.value : (state.draftRisk||'');
+    const justVal = justInputEl ? justInputEl.value : (state.draftJust||'');
+    plannerNavBtn.disabled = total===0 || total>100 || !riskVal.trim() || !justVal.trim();
+  }
   main.querySelectorAll('input[data-tok]').forEach(inp=>{
     inp.addEventListener('input', ()=>{
       const t = currentDraftTokens();
@@ -1718,6 +2275,7 @@ function wireEvents(){
       }
       const submitBtn = main.querySelector('#submitDraft, #submitRevision');
       if(submitBtn) submitBtn.disabled = total===0 || total>100;
+      syncPlannerNav();
     });
   });
 
@@ -1744,9 +2302,9 @@ function wireEvents(){
 
   // planner risk/justification live buffer (so they survive navigation before submit)
   const riskInput = main.querySelector('#riskInput');
-  if(riskInput) riskInput.addEventListener('input', ()=>{ state.draftRisk = riskInput.value; });
+  if(riskInput) riskInput.addEventListener('input', ()=>{ state.draftRisk = riskInput.value; syncPlannerNav(); });
   const justInput = main.querySelector('#justInput');
-  if(justInput) justInput.addEventListener('input', ()=>{ state.draftJust = justInput.value; });
+  if(justInput) justInput.addEventListener('input', ()=>{ state.draftJust = justInput.value; syncPlannerNav(); });
 
   // jigsaw
   main.querySelectorAll('[data-jig]').forEach(b=>b.addEventListener('click', ()=>{
@@ -1755,17 +2313,34 @@ function wireEvents(){
   const saveJigNotes = main.querySelector('#saveJigNotes');
   if(saveJigNotes) saveJigNotes.addEventListener('click', ()=>{ g1().jigsaw.notes = main.querySelector('#jigNotes').value; saveState(); });
 
-  // wall comments
+  // wall comments — open the simulated pop-up instead of window.prompt(),
+  // which some embedded/preview contexts block (nothing visibly happens).
   main.querySelectorAll('[data-comment-on]').forEach(b=>b.addEventListener('click', ()=>{
     const gid = b.dataset.commentOn; const target = state.groups[gid];
-    const strength = prompt('One evidence-supported strength in '+target.name+"'s plan:");
-    if(strength===null) return;
-    const question = prompt('A probing question for them (e.g. "What trade-off moves if...?")');
-    if(question===null) return;
-    const g = g1();
-    g.commentsGiven.push({toGroup:gid, toGroupName:target.name, strength, question, at:new Date().toISOString()});
-    checkBadges(); saveState(); render();
+    commentModal = {gid, groupName: target.name, strength:'', question:''};
+    render();
   }));
+  const modalOverlay = main.querySelector('#commentModalOverlay');
+  if(modalOverlay){
+    const closeModal = ()=>{ commentModal=null; render(); };
+    modalOverlay.addEventListener('click', (e)=>{ if(e.target===modalOverlay) closeModal(); });
+    document.addEventListener('keydown', function escCommentModal(e){ if(e.key==='Escape'){ closeModal(); document.removeEventListener('keydown', escCommentModal); } }, {once:true});
+    const mClose = main.querySelector('#commentModalClose'); if(mClose) mClose.addEventListener('click', closeModal);
+    const mCancel = main.querySelector('#commentModalCancel'); if(mCancel) mCancel.addEventListener('click', closeModal);
+    const mStrength = main.querySelector('#modalStrength');
+    const mQuestion = main.querySelector('#modalQuestion');
+    const mSubmit = main.querySelector('#commentModalSubmit');
+    const syncSubmitEnabled = ()=>{ if(mSubmit) mSubmit.disabled = !(commentModal.strength||'').trim() || !(commentModal.question||'').trim(); };
+    if(mStrength) mStrength.addEventListener('input', ()=>{ commentModal.strength = mStrength.value; syncSubmitEnabled(); });
+    if(mQuestion) mQuestion.addEventListener('input', ()=>{ commentModal.question = mQuestion.value; syncSubmitEnabled(); });
+    if(mSubmit) mSubmit.addEventListener('click', ()=>{
+      const g = g1();
+      g.commentsGiven.push({toGroup:commentModal.gid, toGroupName:commentModal.groupName, strength:commentModal.strength.trim(), question:commentModal.question.trim(), at:new Date().toISOString()});
+      commentModal = null;
+      checkBadges(); saveState(); render();
+    });
+    if(mStrength) mStrength.focus();
+  }
 
   // quick check
   main.querySelectorAll('[data-qc]').forEach(b=>b.addEventListener('click', ()=>{
@@ -1869,7 +2444,7 @@ function wireEvents(){
     copyToClipboard(area.value, exportBtn);
   });
   const resetBtn = main.querySelector('#resetBtn');
-  if(resetBtn) resetBtn.addEventListener('click', ()=>{ resetAll(); });
+  if(resetBtn) resetBtn.addEventListener('click', openResetConfirm);
 
   // quiz "why" reveal already shown via class; add correctness styling after click (re-render handles disabled-looking via answered map)
   if(state.quiz && state.quiz.answered){
@@ -1888,14 +2463,34 @@ function wireEvents(){
 /* ---------------------------------------------------------------- *
  * 8. GLOBAL CHROME EVENTS
  * ---------------------------------------------------------------- */
-document.getElementById('btnViewStudent').addEventListener('click', ()=>{ narratorClose(); state.view = 'journey'; saveState(); render(); });
-document.getElementById('btnViewTeacher').addEventListener('click', ()=>{ narratorClose(); state.view='dashboard'; saveState(); render(); });
+document.getElementById('btnViewStudent').addEventListener('click', ()=>{ narratorClose(); stopSpeaking(); dashboardUnlocked = false; pinError = false; state.view = 'journey'; saveState(); render(); });
+document.getElementById('btnViewTeacher').addEventListener('click', ()=>{ narratorClose(); stopSpeaking(); if(state.view!=='dashboard') preGateView = state.view; state.view='dashboard'; saveState(); render(); });
+document.getElementById('achvClose').addEventListener('click', closeAchvPanel);
+document.getElementById('achvPanel').addEventListener('click', (e)=>{ if(e.target.id==='achvPanel') closeAchvPanel(); });
+document.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && !document.getElementById('achvPanel').hidden) closeAchvPanel(); });
+document.getElementById('resetTopBtn').addEventListener('click', openResetConfirm);
+document.getElementById('resetConfirmClose').addEventListener('click', closeResetConfirm);
+document.getElementById('resetConfirmCancel').addEventListener('click', closeResetConfirm);
+document.getElementById('resetConfirmModal').addEventListener('click', (e)=>{ if(e.target.id==='resetConfirmModal') closeResetConfirm(); });
+document.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && !document.getElementById('resetConfirmModal').hidden) closeResetConfirm(); });
+document.getElementById('resetConfirmGo').addEventListener('click', ()=>{ closeResetConfirm(); resetAll(); });
 document.getElementById('fsUp').addEventListener('click', ()=>{ state.fontStep = Math.min(3,(state.fontStep||0)+1); applyA11y(); saveState(); });
 document.getElementById('fsDown').addEventListener('click', ()=>{ state.fontStep = Math.max(-1,(state.fontStep||0)-1); applyA11y(); saveState(); });
 document.getElementById('contrastBtn').addEventListener('click', ()=>{
   state.theme = state.theme==='dark' ? 'light' : (state.theme==='light' ? 'system' : 'dark');
   applyA11y(); saveState();
 });
+function dnote(label, text){
+  return `<div class="dnote"><b>${esc(label)}</b>${esc(text)}</div>`;
+}
+function updateNotesBtn(){
+  const b = document.getElementById('notesBtn');
+  if(!b) return;
+  const on = !!state.showNotes;
+  document.body.classList.toggle('show-notes', on);
+  b.setAttribute('aria-pressed', String(on));
+  b.title = on ? 'Design notes on — click to hide' : 'Design notes off — show why each screen is built this way';
+}
 function updateSoundBtn(){
   const b = document.getElementById('soundBtn');
   if(!b) return;
@@ -1908,6 +2503,10 @@ document.getElementById('soundBtn').addEventListener('click', ()=>{
   state.soundOn = state.soundOn===false ? true : false;
   updateSoundBtn(); saveState();
   if(state.soundOn) playChime('tick');
+});
+document.getElementById('notesBtn').addEventListener('click', ()=>{
+  state.showNotes = !state.showNotes;
+  updateNotesBtn(); saveState();
 });
 document.getElementById('narratorBox').addEventListener('click', narratorAdvance);
 document.getElementById('narratorClose').addEventListener('click', (e)=>{ e.stopPropagation(); narratorClose(); });
@@ -1929,5 +2528,3 @@ if (window.claude && window.claude.hot) {
 
 })();
 </script>
-
-</body></html>
